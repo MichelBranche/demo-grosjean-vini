@@ -1,3 +1,6 @@
+
+![Hero Section](preview.png)
+
 # Grosjean Vins — demo (React + Vite)
 
 Landing marketing premium per [grosjeanvins.it](https://grosjeanvins.it/).
