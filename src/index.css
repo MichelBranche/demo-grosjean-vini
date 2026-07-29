@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+:root {
+  /* Panna — soft cream paper */
+  --paper: #f7f3eb;
+  --paper-2: #efe9df;
+  --ink: #1a1f24;
+  --ink-2: #3d4750;
+  --pine: #2f4a3c;
+  --gold: #cfb538;
+  --wine: #8a3d3a;
+  --line: rgba(26, 31, 36, 0.16);
+  --font-body: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-pine: var(--pine);
+  --color-gold: var(--gold);
+  --color-wine: var(--wine);
+  --color-line: var(--line);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Avoid iOS tap highlight on chrome */
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--pine);
+  color: #fff;
+}
+
+/* Scrollbar — paper / ink */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-2) var(--paper-2);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--paper-2);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(26, 31, 36, 0.35);
+  border: 2px solid var(--paper-2);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ink);
+}
+
+*::-webkit-scrollbar-corner {
+  background: var(--paper-2);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.chapter {
+  position: relative;
+}
+
+.chapter-stage {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.chapter-media {
+  position: absolute;
+  inset: 0;
+  will-change: transform, clip-path;
+}
+
+.chapter-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-media {
+    will-change: auto;
+  }
+}
+
+/* Bottle silhouette shadow only — motion is GSAP, not CSS transition */
+.bottle-shadow {
+  filter: drop-shadow(8px 14px 5px rgba(26, 31, 36, 0.22));
+}
