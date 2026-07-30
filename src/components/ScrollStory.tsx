@@ -135,14 +135,14 @@ export function ScrollStory() {
                 scrollTrigger: {
                   trigger: hero,
                   start: 'top top',
-                  end: '+=120%',
-                  scrub: 0.45,
+                  end: '+=48%',
+                  scrub: 0.35,
                   pin: true,
                   anticipatePin: 1,
                 },
               })
-              .fromTo(heroImg, { scale: 1.08 }, { scale: 1, ease: 'none' }, 0)
-              .to(heroBrand, { yPercent: -12, ease: 'none' }, 0)
+              .fromTo(heroImg, { scale: 1.06 }, { scale: 1, ease: 'none' }, 0)
+              .to(heroBrand, { yPercent: -6, ease: 'none' }, 0)
           }
 
           const years = root.current?.querySelector<HTMLElement>("[data-chapter='anni']")
