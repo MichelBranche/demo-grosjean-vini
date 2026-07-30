@@ -1,10 +1,14 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useI18n } from '../i18n/I18nProvider'
 import { Pairings } from './Pairings'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
+
+const INTRO_SESSION_KEY = 'grosjean-intro-seen'
 
 const wines = [
   { name: 'Chambave Muscat', year: '2025', price: '19 €', img: '/images/bottle-muscat.png' },
@@ -13,8 +17,23 @@ const wines = [
   { name: 'Clairetz', year: '2022', price: '35 €', img: '/images/bottle-clairetz.png' },
 ]
 
+function hasSeenIntro() {
+  try {
+    return sessionStorage.getItem(INTRO_SESSION_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
 export function ScrollStory() {
+  const { t } = useI18n()
   const root = useRef<HTMLDivElement>(null)
+  const [showIntro] = useState(() => !hasSeenIntro())
+  const [reduceMotion] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false,
+  )
 
   useGSAP(
     () => {
@@ -34,10 +53,15 @@ export function ScrollStory() {
         window.setTimeout(() => ScrollTrigger.refresh(), 200)
       }
 
-      if (reduce) {
+      const skipIntro = () => {
         intro?.remove()
         gsap.set(heroBoot, { clearProps: 'all' })
         armScrollChapters()
+        armScroll()
+      }
+
+      if (reduce || !showIntro) {
+        skipIntro()
         return
       }
 
@@ -58,6 +82,11 @@ export function ScrollStory() {
       const boot = gsap.timeline({
         defaults: { ease: 'power3.out' },
         onComplete: () => {
+          try {
+            sessionStorage.setItem(INTRO_SESSION_KEY, '1')
+          } catch {
+            /* ignore */
+          }
           document.documentElement.style.overflow = ''
           document.body.style.overflow = ''
           lenis?.scrollTo(0, { immediate: true })
@@ -277,53 +306,70 @@ export function ScrollStory() {
 
   return (
     <div ref={root}>
-      <div data-intro className="fixed inset-0 z-[100] overflow-hidden" aria-hidden>
-        {/* Left curtain — holds left half of the wordmark */}
-        <div
-          data-intro-left
-          className="absolute inset-y-0 left-0 z-10 w-1/2 overflow-hidden bg-paper will-change-transform"
-        >
-          <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2">
-            <p
-              data-intro-word
-              className="whitespace-nowrap font-body text-[clamp(2.2rem,11vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.06em] text-ink"
-            >
-              Grosjean
-              <span className="align-super text-[0.45em] tracking-normal">®</span>
-            </p>
+      {showIntro && (
+        <div data-intro className="fixed inset-0 z-[100] overflow-hidden" aria-hidden>
+          {/* Left curtain — holds left half of the wordmark */}
+          <div
+            data-intro-left
+            className="absolute inset-y-0 left-0 z-10 w-1/2 overflow-hidden bg-paper will-change-transform"
+          >
+            <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2">
+              <p
+                data-intro-word
+                className="whitespace-nowrap font-body text-[clamp(2.2rem,11vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.06em] text-ink"
+              >
+                Grosjean
+                <span className="align-super text-[0.45em] tracking-normal">®</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Right curtain — holds right half of the wordmark */}
+          <div
+            data-intro-right
+            className="absolute inset-y-0 right-0 z-10 w-1/2 overflow-hidden bg-paper will-change-transform"
+          >
+            <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2">
+              <p
+                data-intro-word
+                className="whitespace-nowrap font-body text-[clamp(2.2rem,11vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.06em] text-ink"
+              >
+                Grosjean
+                <span className="align-super text-[0.45em] tracking-normal">®</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Center seam that marks the split */}
+          <div className="pointer-events-none absolute left-1/2 top-[38%] z-20 h-[24%] -translate-x-1/2">
+            <div data-intro-rule className="h-full w-px origin-center bg-gold/70" />
           </div>
         </div>
-
-        {/* Right curtain — holds right half of the wordmark */}
-        <div
-          data-intro-right
-          className="absolute inset-y-0 right-0 z-10 w-1/2 overflow-hidden bg-paper will-change-transform"
-        >
-          <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2">
-            <p
-              data-intro-word
-              className="whitespace-nowrap font-body text-[clamp(2.2rem,11vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.06em] text-ink"
-            >
-              Grosjean
-              <span className="align-super text-[0.45em] tracking-normal">®</span>
-            </p>
-          </div>
-        </div>
-
-        {/* Center seam that marks the split */}
-        <div className="pointer-events-none absolute left-1/2 top-[38%] z-20 h-[24%] -translate-x-1/2">
-          <div data-intro-rule className="h-full w-px origin-center bg-gold/70" />
-        </div>
-      </div>
+      )}
 
       <section id="top" data-chapter="hero" className="chapter">
         <div className="chapter-stage bg-ink">
           <div data-media className="chapter-media">
-            <img
-              src="/images/hero-clean.jpg"
-              alt="Pendii vitati in Valle d’Aosta"
-              className="h-full w-full object-cover object-[center_40%]"
-            />
+            {reduceMotion ? (
+              <img
+                src="/images/hero-clean.jpg"
+                alt={t('hero.alt')}
+                className="h-full w-full object-cover object-[center_40%]"
+              />
+            ) : (
+              <video
+                className="h-full w-full object-cover object-center"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                poster="/images/hero-clean.jpg"
+                aria-hidden
+              >
+                <source src="/videos/hero.mp4" type="video/mp4" />
+              </video>
+            )}
           </div>
           <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(26,31,36,0.62)_0%,rgba(26,31,36,0.28)_48%,rgba(26,31,36,0.18)_100%)]" />
 
@@ -332,7 +378,7 @@ export function ScrollStory() {
             className="relative z-10 flex h-full flex-col justify-between px-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-[5.5rem] text-paper sm:px-6 md:px-10 md:pb-14 md:pt-32 lg:px-14"
           >
             <p className="mx-auto max-w-[12rem] text-center font-body text-[0.65rem] leading-relaxed tracking-[0.14em] uppercase text-paper/70 md:text-[0.72rem]">
-              Quart · Valle d’Aosta
+              {t('hero.location')}
             </p>
 
             <div data-brand className="mx-auto flex w-full max-w-[36rem] flex-col items-center text-center">
@@ -342,11 +388,11 @@ export function ScrollStory() {
               </h1>
 
               <p className="mt-4 font-body text-[clamp(1.05rem,4.5vw,1.35rem)] font-medium italic leading-snug tracking-[0.02em] text-paper/90 md:mt-8">
-                Grands vins de montagne
+                {t('hero.tagline')}
               </p>
 
               <p className="mt-4 max-w-sm font-body text-[0.9rem] leading-relaxed text-paper/75 md:mt-5 md:text-[0.95rem]">
-                Viticoltura eroica a Quart. Prima cantina biologica della Valle d’Aosta.
+                {t('hero.lead')}
               </p>
 
               <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 md:mt-6 md:gap-x-8">
@@ -354,13 +400,13 @@ export function ScrollStory() {
                   href="#vini"
                   className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-paper underline decoration-paper/35 underline-offset-[6px] transition-opacity hover:opacity-70 md:text-[0.78rem]"
                 >
-                  La collezione
+                  {t('hero.ctaCollection')}
                 </a>
                 <a
                   href="#visita"
                   className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-paper/80 transition-opacity hover:opacity-100 md:text-[0.78rem]"
                 >
-                  Prenota una visita →
+                  {t('hero.ctaVisit')}
                 </a>
               </div>
             </div>
@@ -372,29 +418,25 @@ export function ScrollStory() {
         <div className="relative flex min-h-[100svh] flex-col overflow-visible bg-paper md:h-[100svh]">
           <div className="flex shrink-0 flex-col items-center gap-3 px-5 pb-4 pt-20 text-center md:px-8 md:pb-5 md:pt-16">
             <h2 className="font-body text-[clamp(1.65rem,6vw,2.8rem)] font-semibold tracking-tight">
-              La nostra collezione
+              {t('vini.heading')}
             </h2>
             <p className="font-body text-sm text-ink-2 md:text-[0.95rem]">
-              Una selezione dalla cantina
+              {t('vini.sub')}
             </p>
-            <a
-              href="https://grosjeanvins.it/negozio/"
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              to="/catalogo"
               className="mt-1 font-body text-sm font-semibold underline decoration-ink/30 underline-offset-4"
             >
-              Negozio completo ↗
-            </a>
+              {t('vini.cta')}
+            </Link>
           </div>
 
           <div className="grid min-h-[70svh] flex-1 grid-cols-2 md:min-h-0 md:grid-cols-4">
             {wines.map((w, i) => (
-              <a
+              <Link
                 key={w.name}
                 data-wine
-                href="https://grosjeanvins.it/negozio/"
-                target="_blank"
-                rel="noreferrer"
+                to="/catalogo"
                 className={`relative z-0 flex min-h-0 flex-col items-center border-line px-2 pb-6 pt-3 hover:z-20 md:px-4 md:pb-10 md:pt-4 ${
                   i % 2 === 1 ? 'border-l' : ''
                 } ${i >= 2 ? 'border-t md:border-t-0' : ''} ${i > 0 ? 'md:border-l' : ''}`}
@@ -416,7 +458,7 @@ export function ScrollStory() {
                     {w.year} · {w.price}
                   </p>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -425,15 +467,14 @@ export function ScrollStory() {
       <section id="anni" data-chapter="anni" className="chapter">
         <div className="bg-paper px-5 py-20 md:relative md:h-[100svh] md:overflow-hidden md:px-10 md:py-0">
           <div className="mx-auto flex max-w-[1100px] flex-col justify-center gap-10 md:h-full md:gap-12">
-            <p className="font-body text-sm text-ink-2">Tre date, una famiglia</p>
+            <p className="font-body text-sm text-ink-2">{t('anni.eyebrow')}</p>
 
             <article data-anno className="border-t border-line pt-5 md:pt-6">
               <p className="font-body text-[clamp(2.6rem,14vw,6rem)] font-semibold leading-none tracking-tight">
                 1968
               </p>
               <p className="mt-3 max-w-lg font-body text-[0.98rem] leading-relaxed text-ink-2 md:mt-4 md:text-[1.05rem]">
-                Nonno Dauphin presenta il Ciliegiolo all’Exposition des Vins du Val d’Aoste. Nasce
-                l’impresa.
+                {t('anni.1968')}
               </p>
             </article>
 
@@ -442,17 +483,16 @@ export function ScrollStory() {
                 2011
               </p>
               <p className="mt-3 max-w-lg font-body text-[0.98rem] leading-relaxed text-ink-2 md:mt-4 md:text-[1.05rem]">
-                Conversione biologica: prima cantina della Valle d’Aosta a scegliere questa strada.
+                {t('anni.2011')}
               </p>
             </article>
 
             <article data-anno className="border-t border-line pt-5 md:pt-6">
               <p className="font-body text-[clamp(2.6rem,14vw,6rem)] font-semibold leading-none tracking-tight">
-                Oggi
+                {t('anni.oggiLabel')}
               </p>
               <p className="mt-3 max-w-lg font-body text-[0.98rem] leading-relaxed text-ink-2 md:mt-4 md:text-[1.05rem]">
-                Hervé, Didier, Simon e Marco: la terza generazione custode dei cru e dei vitigni
-                autoctoni.
+                {t('anni.oggi')}
               </p>
             </article>
           </div>
@@ -468,7 +508,7 @@ export function ScrollStory() {
         <div className="relative h-[58svh] w-full shrink-0 md:absolute md:inset-0 md:h-full">
           <img
             src="/images/degustavigna.jpg"
-            alt="Vigna Grosjean a Quart"
+            alt={t('esperienze.alt')}
             className="h-full w-full object-cover object-[18%_42%] md:object-[center_40%]"
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(26,31,36,0.1)_0%,rgba(26,31,36,0.25)_45%,rgba(26,31,36,0.72)_100%)] md:bg-[linear-gradient(180deg,rgba(26,31,36,0.15)_0%,rgba(26,31,36,0.55)_55%,rgba(26,31,36,0.78)_100%)]" />
@@ -476,19 +516,19 @@ export function ScrollStory() {
 
         <div className="relative z-10 flex w-full flex-col items-start bg-ink px-5 pb-14 pt-10 text-left sm:px-6 md:min-h-[100svh] md:items-end md:justify-end md:bg-transparent md:px-10 md:pb-20 md:pt-32 md:text-right lg:px-14">
           <p className="font-body text-[0.72rem] tracking-[0.16em] uppercase text-paper/65">
-            Dal calice alla vigna
+            {t('esperienze.eyebrow')}
           </p>
           <h2 className="mt-4 max-w-[14ch] font-body text-[clamp(2.2rem,9vw,4.5rem)] font-semibold leading-[0.95] tracking-tight">
-            Vieni a vivere Quart
+            {t('esperienze.heading')}
           </h2>
           <p className="mt-5 max-w-md font-body text-[0.95rem] leading-relaxed text-paper/75 md:text-[1rem]">
-            Dopo la tavola, i filari. Degustazioni, picnic e racconti tra le vigne di Ollignan.
+            {t('esperienze.body')}
           </p>
           <a
             href="#visita"
             className="mt-8 inline-block font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-paper underline decoration-paper/35 underline-offset-[6px] transition-opacity hover:opacity-70 md:text-[0.78rem]"
           >
-            Scopri le esperienze
+            {t('esperienze.cta')}
           </a>
         </div>
       </section>
@@ -497,20 +537,16 @@ export function ScrollStory() {
         <div className="mx-auto grid max-w-[1500px] lg:min-h-[100svh] lg:grid-cols-2">
           <div className="order-2 flex flex-col justify-center px-5 py-14 sm:px-6 md:px-10 md:py-24 lg:order-1 lg:px-14 lg:py-28">
             <p className="font-body text-[0.72rem] tracking-[0.16em] uppercase text-ink-2">
-              Alla scoperta del Terroir valdostano
+              {t('visita.eyebrow')}
             </p>
             <h2 className="mt-4 max-w-[12ch] font-body text-[clamp(2rem,9vw,4.2rem)] font-semibold leading-[0.95] tracking-tight md:mt-5">
-              PicNic in Vigna
+              {t('visita.heading')}
             </h2>
             <p className="mt-5 max-w-md font-body text-[0.95rem] leading-relaxed text-ink-2 md:mt-6 md:text-[1rem]">
-              Goditi un calice di vino con la spettacolare vista delle montagne che circondano Aosta,
-              immerso nei filari dei migliori Cru della Valle d’Aosta, abbracciato dai filari dei
-              vitigni autoctoni. Immerso nella natura potrai apprezzare appieno l’espressione dei
-              nostri vini che crescono in un ambiente sano e pulito.
+              {t('visita.body')}
             </p>
             <p className="mt-4 max-w-md font-display text-[1rem] italic leading-relaxed text-ink md:mt-5 md:text-[1.05rem]">
-              «Prima di amare, impara a camminare sulla neve senza lasciare impronte» — noi vogliamo
-              essere custodi e giardinieri dei nostri Terroir.
+              {t('visita.quote')}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-10 md:gap-x-8">
               <a
@@ -519,7 +555,7 @@ export function ScrollStory() {
                 rel="noreferrer"
                 className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase underline decoration-ink/30 underline-offset-[6px] transition-opacity hover:opacity-60 md:text-[0.78rem]"
               >
-                Prenota una visita
+                {t('visita.ctaBook')}
               </a>
               <a
                 href="https://grosjeanvins.it/"
@@ -527,7 +563,7 @@ export function ScrollStory() {
                 rel="noreferrer"
                 className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-ink-2 transition-opacity hover:opacity-100 md:text-[0.78rem]"
               >
-                Scopri di più →
+                {t('visita.ctaMore')}
               </a>
             </div>
           </div>
@@ -535,7 +571,7 @@ export function ScrollStory() {
           <div className="order-1 flex items-center justify-center px-4 pb-2 pt-10 sm:px-5 md:px-8 md:py-14 lg:order-2 lg:py-16 lg:pr-10">
             <img
               src="/images/picnic.jpg"
-              alt="Picnic in vigna Grosjean a Quart"
+              alt={t('visita.alt')}
               className="h-auto w-full max-w-[520px] object-contain lg:max-h-[min(85vh,780px)] lg:w-auto"
             />
           </div>
@@ -546,30 +582,29 @@ export function ScrollStory() {
         <div className="mx-auto grid max-w-[1500px] lg:min-h-[100svh] lg:grid-cols-2">
           <div className="order-2 flex flex-col justify-center px-5 py-14 sm:px-6 md:px-10 md:py-24 lg:order-1 lg:px-14 lg:py-28">
             <p className="font-body text-[0.72rem] tracking-[0.16em] uppercase text-ink-2">
-              Custodi del territorio
+              {t('visione.eyebrow')}
             </p>
             <h2 className="mt-4 max-w-[12ch] font-body text-[clamp(2rem,9vw,4.2rem)] font-semibold leading-[0.95] tracking-tight md:mt-5">
-              La nostra visione
+              {t('visione.heading')}
             </h2>
             <p className="mt-5 max-w-md font-body text-[0.95rem] leading-relaxed text-ink-2 md:mt-6 md:text-[1rem]">
-              Crescere per rappresentare al meglio il panorama vitivinicolo della Valle d’Aosta —
-              con la stessa cura con cui coltiviamo i filari.
+              {t('visione.body1')}
             </p>
             <p className="mt-4 max-w-md font-body text-[0.95rem] leading-relaxed text-ink-2 md:mt-5 md:text-[1rem]">
-              Tutelare il terroir e l’ambiente in cui viviamo, per dare futuro ai nostri figli.
+              {t('visione.body2')}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-10 md:gap-x-8">
               <a
                 href="#anni"
                 className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase underline decoration-ink/30 underline-offset-[6px] transition-opacity hover:opacity-60 md:text-[0.78rem]"
               >
-                La nostra storia
+                {t('visione.ctaStory')}
               </a>
               <a
                 href="#visita"
                 className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-ink-2 transition-opacity hover:opacity-100 md:text-[0.78rem]"
               >
-                Vieni a Quart →
+                {t('visione.ctaVisit')}
               </a>
             </div>
           </div>
@@ -577,7 +612,7 @@ export function ScrollStory() {
           <div className="order-1 flex items-center justify-center px-4 pb-2 pt-10 sm:px-5 md:px-8 md:py-14 lg:order-2 lg:py-16 lg:pr-10">
             <img
               src="/images/visione-uve.png"
-              alt="Uve Grosjean con coccinella in vigna"
+              alt={t('visione.alt')}
               className="h-auto w-full max-w-[520px] object-contain lg:max-h-[min(85vh,780px)] lg:w-auto"
             />
           </div>
@@ -593,7 +628,7 @@ export function ScrollStory() {
             <img
               data-degust-img
               src="/images/degustazione.png"
-              alt="Degustazione Grosjean — Müller Thurgau, pane e miele"
+              alt={t('degustazione.alt')}
               width={1024}
               height={768}
               className="absolute left-0 top-[-12%] h-[124%] w-full object-cover will-change-transform"
@@ -604,23 +639,19 @@ export function ScrollStory() {
 
         <div className="mx-auto flex max-w-[40rem] flex-col items-center px-5 py-14 text-center sm:px-6 md:py-20">
           <p className="font-body text-[0.72rem] tracking-[0.16em] uppercase text-ink-2">
-            In cantina
+            {t('degustazione.eyebrow')}
           </p>
           <h2 className="mt-4 font-body text-[clamp(1.9rem,8vw,3.8rem)] font-semibold leading-[1.05] tracking-tight md:mt-5">
-            Degustazione e visita in cantina
+            {t('degustazione.heading')}
           </h2>
           <p className="mt-7 font-body text-[1rem] leading-relaxed text-ink-2">
-            Il vino non è soltanto un prodotto di consumo: è l’espressione di un terroir, di fatica e
-            lavoro umano che guida e plasma le forze della natura.
+            {t('degustazione.body1')}
           </p>
           <p className="mt-5 font-display text-[1.1rem] italic leading-relaxed text-ink">
-            «Il vino è come un bel libro, pieno di racconti, di personaggi ed avventure — e
-            l’etichetta non è altro che la copertina di tale libro.»
+            {t('degustazione.quote')}
           </p>
           <p className="mt-5 font-body text-[0.98rem] leading-relaxed text-ink-2">
-            La degustazione inizia dall’impressione della bottiglia e dell’etichetta, poi si apre al
-            viaggio dei sensi — olfatto e gusto. La visita in cantina e vigneto completa
-            l’esplorazione: aneddoti e ricette familiari tra una barrique e l’altra.
+            {t('degustazione.body2')}
           </p>
           <a
             href="https://grosjeanvins.it/degustazione/"
@@ -628,7 +659,7 @@ export function ScrollStory() {
             rel="noreferrer"
             className="mt-10 font-body text-[0.78rem] font-semibold tracking-[0.12em] uppercase underline decoration-ink/30 underline-offset-[6px] transition-opacity hover:opacity-60"
           >
-            Prenota una visita
+            {t('degustazione.cta')}
           </a>
         </div>
       </section>

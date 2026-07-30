@@ -1,22 +1,6 @@
 import { useState, type ReactNode } from 'react'
-
-const shopLinks = [
-  { label: 'Tutti i vini', href: 'https://grosjeanvins.it/negozio/' },
-  { label: 'Rossi', href: 'https://grosjeanvins.it/negozio/' },
-  { label: 'Bianchi', href: 'https://grosjeanvins.it/negozio/' },
-  { label: 'Cru Rovettaz', href: 'https://grosjeanvins.it/negozio/' },
-  { label: 'Degustazione', href: 'https://grosjeanvins.it/degustazione/' },
-]
-
-const infoLinks = [
-  { label: 'La famiglia', href: '#anni' },
-  { label: 'A tavola', href: '#abbinamenti' },
-  { label: 'Visione', href: '#visione' },
-  { label: 'Degustazione', href: '#degustazione' },
-  { label: 'Visita in cantina', href: '#visita' },
-  { label: 'Negozio online', href: 'https://grosjeanvins.it/negozio/' },
-  { label: 'Contatti', href: 'mailto:info@grosjeanvins.it' },
-]
+import { Link } from 'react-router-dom'
+import { useI18n } from '../i18n/I18nProvider'
 
 const socialLinks = [
   {
@@ -26,18 +10,18 @@ const socialLinks = [
   },
   {
     label: 'Instagram',
-    href: 'https://www.instagram.com/grosjeanvins/',
+    href: 'https://www.instagram.com/grosjean.vins/',
     path: 'M12 7.2A4.8 4.8 0 1 0 12 16.8 4.8 4.8 0 0 0 12 7.2zm0 7.9a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2zm6.1-8.2a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0zM12 4.2c-2.1 0-2.4 0-3.2.1-.8 0-1.4.2-1.9.4a3.9 3.9 0 0 0-1.4 1.4c-.2.5-.3 1.1-.4 1.9-.1.8-.1 1.1-.1 3.2s0 2.4.1 3.2c0 .8.2 1.4.4 1.9.3.5.7 1 1.4 1.4.5.2 1.1.3 1.9.4.8.1 1.1.1 3.2.1s2.4 0 3.2-.1c.8 0 1.4-.2 1.9-.4a3.9 3.9 0 0 0 1.4-1.4c.2-.5.3-1.1.4-1.9.1-.8.1-1.1.1-3.2s0-2.4-.1-3.2c0-.8-.2-1.4-.4-1.9a3.9 3.9 0 0 0-1.4-1.4c-.5-.2-1.1-.3-1.9-.4-.8-.1-1.1-.1-3.2-.1zm0 1.5c2.1 0 2.3 0 3.1.1.8 0 1.2.2 1.5.3.4.2.7.4 1 .7.3.3.5.6.7 1 .1.3.2.7.3 1.5.1.8.1 1 .1 3.1s0 2.3-.1 3.1c0 .8-.2 1.2-.3 1.5-.2.4-.4.7-.7 1-.3.3-.6.5-1 .7-.3.1-.7.2-1.5.3-.8.1-1 .1-3.1.1s-2.3 0-3.1-.1c-.8 0-1.2-.2-1.5-.3-.4-.2-.7-.4-1-.7-.3-.3-.5-.6-.7-1-.1-.3-.2-.7-.3-1.5-.1-.8-.1-1-.1-3.1s0-2.3.1-3.1c0-.8.2-1.2.3-1.5.2-.4.4-.7.7-1 .3-.3.6-.5 1-.7.3-.1.7-.2 1.5-.3.8-.1 1-.1 3.1-.1z',
   },
   {
     label: 'YouTube',
-    href: 'https://grosjeanvins.it/',
+    href: 'https://www.youtube.com/channel/UClXTQFWf8YgrEcyBdRzpsSA',
     path: 'M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z',
   },
   {
-    label: 'LinkedIn',
-    href: 'https://grosjeanvins.it/',
-    path: 'M6.5 8.5H3.6V20h2.9V8.5zM5 3.5A1.7 1.7 0 1 0 5 6.9 1.7 1.7 0 0 0 5 3.5zM20.4 20h-2.9v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9V20H10.7V8.5h2.8v1.6h.1c.4-.7 1.3-1.5 2.8-1.5 3 0 3.5 2 3.5 4.5V20z',
+    label: 'TikTok',
+    href: 'https://www.tiktok.com/@grosjean.vins',
+    path: 'M19.6 8.4c-1.5-.1-2.9-.7-4-1.6v7.3a5.7 5.7 0 1 1-5.7-5.7c.3 0 .6 0 .9.1v2.9a2.8 2.8 0 1 0 2 2.7V2.5h2.8c.1 1.6.8 3.1 1.9 4.2a5.8 5.8 0 0 0 3.1 1.5v2.9a8.5 8.5 0 0 1-1-.2z',
   },
 ]
 
@@ -50,15 +34,26 @@ function FooterHeading({ children }: { children: string }) {
 }
 
 function FooterLink({ href, children }: { href: string; children: string }) {
-  const external = href.startsWith('http')
+  const external = href.startsWith('http') || href.startsWith('mailto:')
+  const className =
+    'block font-body text-[0.95rem] leading-[1.7] text-ink transition-opacity hover:opacity-55'
+
+  if (external) {
+    return (
+      <a
+        href={href}
+        className={className}
+        {...(href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}
+      >
+        {children}
+      </a>
+    )
+  }
+
   return (
-    <a
-      href={href}
-      className="block font-body text-[0.95rem] leading-[1.7] text-ink transition-opacity hover:opacity-55"
-      {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
-    >
+    <Link to={href} className={className}>
       {children}
-    </a>
+    </Link>
   )
 }
 
@@ -129,11 +124,13 @@ function SocialRow() {
 }
 
 function DrinkMark({ className = 'h-8' }: { className?: string }) {
+  const { t } = useI18n()
+
   return (
     <div
       className="inline-flex items-center gap-2.5 text-ink"
       role="img"
-      aria-label="Bevi responsabilmente"
+      aria-label={t('footer.drinkAria')}
     >
       <svg
         viewBox="0 0 48 48"
@@ -150,16 +147,35 @@ function DrinkMark({ className = 'h-8' }: { className?: string }) {
         </g>
       </svg>
       <p className="font-body text-[0.58rem] font-semibold leading-[1.35] tracking-[0.12em] uppercase">
-        Bevi
+        {t('footer.drink1')}
         <br />
-        responsabilmente
+        {t('footer.drink2')}
       </p>
     </div>
   )
 }
 
 export function Footer() {
+  const { t } = useI18n()
   const [open, setOpen] = useState<'shop' | 'info' | 'contact' | null>(null)
+
+  const shopLinks = [
+    { key: 'footer.shop.catalogo', href: '/catalogo' },
+    { key: 'footer.shop.classici', href: '/catalogo' },
+    { key: 'footer.shop.selezioni', href: '/catalogo' },
+    { key: 'footer.shop.bollicine', href: '/catalogo' },
+    { key: 'footer.shop.degustazione', href: 'https://grosjeanvins.it/degustazione/' },
+  ] as const
+
+  const infoLinks = [
+    { key: 'footer.info.famiglia', href: '/#anni' },
+    { key: 'footer.info.aTavola', href: '/#abbinamenti' },
+    { key: 'footer.info.visione', href: '/#visione' },
+    { key: 'footer.info.degustazione', href: '/#degustazione' },
+    { key: 'footer.info.visita', href: '/#visita' },
+    { key: 'footer.info.catalogo', href: '/catalogo' },
+    { key: 'footer.info.contatti', href: 'mailto:info@grosjeanvins.it' },
+  ] as const
 
   const toggle = (key: 'shop' | 'info' | 'contact') =>
     setOpen((prev) => (prev === key ? null : key))
@@ -169,44 +185,42 @@ export function Footer() {
       {/* ——— Mobile (reference Taylor) ——— */}
       <div className="px-5 pt-14 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:px-6 lg:hidden">
         <div className="mx-auto max-w-md">
-          <FooterHeading>Eredità in ogni bottiglia</FooterHeading>
+          <FooterHeading>{t('footer.heritageTitle')}</FooterHeading>
           <p className="mt-4 font-body text-[0.95rem] leading-[1.65] text-ink">
-            Dal 1968 a Quart, tre generazioni di viticoltori. Prima cantina biologica della Valle
-            d’Aosta: vini di montagna nati da pendii eroici e da un motto di famiglia — bien faire
-            et laisser dire.
+            {t('footer.heritageBody')}
           </p>
 
           <div className="mt-8 border-b border-line">
             <Accordion
-              title="Acquista i vini"
+              title={t('footer.shopTitle')}
               open={open === 'shop'}
               onToggle={() => toggle('shop')}
             >
               <ul>
                 {shopLinks.map((link) => (
-                  <li key={link.label}>
-                    <FooterLink href={link.href}>{link.label}</FooterLink>
+                  <li key={link.key}>
+                    <FooterLink href={link.href}>{t(link.key)}</FooterLink>
                   </li>
                 ))}
               </ul>
             </Accordion>
 
             <Accordion
-              title="Informazioni"
+              title={t('footer.infoTitle')}
               open={open === 'info'}
               onToggle={() => toggle('info')}
             >
               <ul>
                 {infoLinks.map((link) => (
-                  <li key={link.label}>
-                    <FooterLink href={link.href}>{link.label}</FooterLink>
+                  <li key={link.key}>
+                    <FooterLink href={link.href}>{t(link.key)}</FooterLink>
                   </li>
                 ))}
               </ul>
             </Accordion>
 
             <Accordion
-              title="Contatti"
+              title={t('footer.contactTitle')}
               open={open === 'contact'}
               onToggle={() => toggle('contact')}
             >
@@ -221,7 +235,7 @@ export function Footer() {
                     href="mailto:info@grosjeanvins.it"
                     className="underline decoration-ink/25 underline-offset-4 transition-opacity hover:opacity-55"
                   >
-                    Scrivici
+                    {t('footer.writeUs')}
                   </a>
                 </p>
               </div>
@@ -250,7 +264,7 @@ export function Footer() {
                 rel="noreferrer"
                 className="transition-opacity hover:opacity-55"
               >
-                Termini
+                {t('footer.terms')}
               </a>
               <a
                 href="https://grosjeanvins.it/"
@@ -258,12 +272,12 @@ export function Footer() {
                 rel="noreferrer"
                 className="transition-opacity hover:opacity-55"
               >
-                Privacy
+                {t('footer.privacy')}
               </a>
             </div>
 
             <p className="font-body text-[0.75rem] text-ink-2">
-              Design by{' '}
+              {t('footer.designBy')}{' '}
               <a
                 href="https://michelbranche.it"
                 target="_blank"
@@ -282,41 +296,39 @@ export function Footer() {
         <div className="mx-auto max-w-[1400px] px-10 pt-24">
           <div className="grid grid-cols-4 gap-x-12">
             <div className="min-w-0">
-              <FooterHeading>Eredità in ogni bottiglia</FooterHeading>
+              <FooterHeading>{t('footer.heritageTitle')}</FooterHeading>
               <p className="mt-5 max-w-[30ch] font-body text-[0.95rem] leading-[1.6] text-ink">
-                Dal 1968 a Quart, tre generazioni di viticoltori. Prima cantina biologica della Valle
-                d’Aosta: vini di montagna nati da pendii eroici e da un motto di famiglia — bien
-                faire et laisser dire.
+                {t('footer.heritageBody')}
               </p>
             </div>
 
             <div className="min-w-0">
-              <FooterHeading>Acquista i vini</FooterHeading>
+              <FooterHeading>{t('footer.shopTitle')}</FooterHeading>
               <ul className="mt-5">
                 {shopLinks.map((link) => (
-                  <li key={link.label}>
-                    <FooterLink href={link.href}>{link.label}</FooterLink>
+                  <li key={link.key}>
+                    <FooterLink href={link.href}>{t(link.key)}</FooterLink>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div className="min-w-0">
-              <FooterHeading>Informazioni</FooterHeading>
+              <FooterHeading>{t('footer.infoTitle')}</FooterHeading>
               <ul className="mt-5">
                 {infoLinks.map((link) => (
-                  <li key={link.label}>
-                    <FooterLink href={link.href}>{link.label}</FooterLink>
+                  <li key={link.key}>
+                    <FooterLink href={link.href}>{t(link.key)}</FooterLink>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div className="min-w-0">
-              <FooterHeading>Contatti</FooterHeading>
+              <FooterHeading>{t('footer.contactTitle')}</FooterHeading>
               <div className="mt-5 space-y-1 font-body text-[0.95rem] leading-[1.7]">
                 <p>
-                  <span className="text-ink-2">Telefono </span>
+                  <span className="text-ink-2">{t('footer.phoneLabel')} </span>
                   <a href="tel:+390165775791" className="transition-opacity hover:opacity-55">
                     +39 0165 77 57 91
                   </a>
@@ -326,7 +338,7 @@ export function Footer() {
                     href="mailto:info@grosjeanvins.it"
                     className="underline decoration-ink/25 underline-offset-4 transition-opacity hover:opacity-55"
                   >
-                    Scrivici
+                    {t('footer.writeUs')}
                   </a>
                 </p>
               </div>
@@ -357,7 +369,7 @@ export function Footer() {
                   rel="noreferrer"
                   className="transition-opacity hover:opacity-55"
                 >
-                  Termini
+                  {t('footer.terms')}
                 </a>
                 <a
                   href="https://grosjeanvins.it/"
@@ -365,7 +377,7 @@ export function Footer() {
                   rel="noreferrer"
                   className="transition-opacity hover:opacity-55"
                 >
-                  Privacy
+                  {t('footer.privacy')}
                 </a>
               </div>
             </div>
@@ -373,7 +385,7 @@ export function Footer() {
             <SocialRow />
 
             <p className="text-center font-body text-[0.75rem] text-ink-2">
-              Design by{' '}
+              {t('footer.designBy')}{' '}
               <a
                 href="https://michelbranche.it"
                 target="_blank"
