@@ -22,7 +22,7 @@ export function CartDrawer() {
 
   return (
     <div
-      className={`fixed inset-0 z-[130] ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
+      className={`fixed inset-0 z-[130] overflow-hidden ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
       aria-hidden={!open}
     >
       <button

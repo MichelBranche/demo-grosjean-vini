@@ -27,6 +27,14 @@
   --font-body: var(--font-body);
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+  overscroll-behavior-x: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-2) var(--paper-2);
+}
+
 html.lenis,
 html.lenis body {
   height: auto;
@@ -42,8 +50,18 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
-  overflow-x: clip;
+  overflow-x: hidden;
+  max-width: 100%;
+  overscroll-behavior-x: none;
+  position: relative;
+  touch-action: pan-y;
   text-rendering: optimizeLegibility;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100%;
+  position: relative;
 }
 
 img {
@@ -62,11 +80,6 @@ button {
 }
 
 /* Scrollbar — paper / ink */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: var(--ink-2) var(--paper-2);
-}
-
 *::-webkit-scrollbar {
   width: 10px;
   height: 10px;

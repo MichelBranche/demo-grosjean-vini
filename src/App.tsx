@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { BrowserRouter, useLocation } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { I18nProvider } from './i18n/I18nProvider'
 import { CartProvider } from './cart/CartProvider'
 import { Header } from './components/Header'
@@ -51,6 +52,7 @@ export default function App() {
             <PageTransition />
             <Footer />
             <CartDrawer />
+            <Analytics />
           </SmoothScroll>
         </CartProvider>
       </BrowserRouter>

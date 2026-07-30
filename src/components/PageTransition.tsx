@@ -130,7 +130,7 @@ export function PageTransition() {
       tween.current?.kill()
       killWaves()
 
-      gsap.set(el, { autoAlpha: 1, pointerEvents: 'all' })
+      gsap.set(el, { autoAlpha: 1, pointerEvents: 'all', backgroundColor: '#5c2422' })
       gsap.set(liquid, { y: '100%', force3D: true, autoAlpha: 1 })
       gsap.set(veil, { autoAlpha: 0 })
       if (mark) gsap.set(mark, { autoAlpha: 0, scale: 0.96 })
@@ -138,7 +138,7 @@ export function PageTransition() {
       if (waveBack) gsap.set(waveBack, { attr: { d: WAVE_A } })
       if (waveMid) gsap.set(waveMid, { attr: { d: WAVE_C } })
       if (waveFront) gsap.set(waveFront, { attr: { d: WAVE_B } })
-      if (sheen) gsap.set(sheen, { opacity: 0.35, xPercent: -20 })
+      if (sheen) gsap.set(sheen, { opacity: 0.12, xPercent: -20 })
 
       if (waveBack) waveTweens.current.push(churnWave(waveBack, { duration: 0.38 }))
       if (waveMid) waveTweens.current.push(churnWave(waveMid, { duration: 0.28, delay: 0.08 }))
@@ -164,7 +164,7 @@ export function PageTransition() {
           }
           busy.current = false
           killWaves()
-          gsap.set(el, { autoAlpha: 0, pointerEvents: 'none' })
+          gsap.set(el, { autoAlpha: 0, pointerEvents: 'none', backgroundColor: 'transparent' })
           gsap.set(liquid, { y: '100%', autoAlpha: 1 })
           gsap.set(veil, { autoAlpha: 0 })
           if (mark) gsap.set(mark, { autoAlpha: 0 })
@@ -192,7 +192,7 @@ export function PageTransition() {
         )
       }
       if (sheen) {
-        tl.to(sheen, { opacity: 0.55, xPercent: 28, duration: 0.85, ease: 'none' }, 0)
+        tl.to(sheen, { opacity: 0.22, xPercent: 28, duration: 0.85, ease: 'none' }, 0)
       }
 
       // 2) Solid veil seals the viewport (kills any top hairline), then mark
@@ -228,7 +228,7 @@ export function PageTransition() {
         tl.to(surface, { y: 4, duration: 0.9, ease: 'sine.inOut' }, 1.35)
       }
       if (sheen) {
-        tl.to(sheen, { opacity: 0.18, xPercent: 75, duration: 0.9, ease: 'none' }, 1.35)
+        tl.to(sheen, { opacity: 0.06, xPercent: 75, duration: 0.9, ease: 'none' }, 1.35)
       }
     }
 
@@ -262,23 +262,25 @@ export function PageTransition() {
           style={{ transform: 'translate3d(0, 100%, 0)' }}
         >
           <div
-            className="absolute left-0 top-0 w-full"
+            className="absolute left-0 top-0 w-full overflow-hidden"
             style={{ transform: 'translateY(-100%)' }}
           >
-            <div ref={surfaceRef} className="w-[200%] will-change-transform">
+            <div ref={surfaceRef} className="w-[200%] max-w-none will-change-transform">
               <svg
                 className="block h-[min(18vw,7.5rem)] w-full"
                 viewBox="0 0 2400 160"
                 preserveAspectRatio="none"
                 aria-hidden
               >
-                <path ref={waveBackRef} d={WAVE_A} fill="#4a1c1a" opacity="0.85" />
+                {/* Solid bed so wave troughs never flash paper underneath */}
+                <rect width="2400" height="160" fill="#5c2422" />
+                <path ref={waveBackRef} d={WAVE_A} fill="#4a1c1a" />
                 <path ref={waveMidRef} d={WAVE_C} fill="#6e2f2d" />
-                <path ref={waveFrontRef} d={WAVE_B} fill="#8a3d3a" opacity="0.95" />
+                <path ref={waveFrontRef} d={WAVE_B} fill="#8a3d3a" />
                 <path
                   d="M0,78 C200,35 400,115 600,70 C800,30 1000,110 1200,72 C1400,38 1600,108 1800,68 C2000,32 2200,100 2400,78"
                   fill="none"
-                  stroke="rgba(255,236,220,0.22)"
+                  stroke="rgba(110,47,45,0.55)"
                   strokeWidth="3"
                   strokeLinecap="round"
                 />
@@ -296,9 +298,9 @@ export function PageTransition() {
             data-sheen
             className="pointer-events-none absolute inset-y-[8%] left-[-20%] w-[55%]"
             style={{
-              opacity: 0.4,
+              opacity: 0.12,
               background:
-                'linear-gradient(105deg, transparent 0%, rgba(255,230,210,0.14) 42%, rgba(207,181,56,0.08) 58%, transparent 78%)',
+                'linear-gradient(105deg, transparent 0%, rgba(138,61,58,0.35) 42%, rgba(207,181,56,0.06) 58%, transparent 78%)',
             }}
           />
         </div>
