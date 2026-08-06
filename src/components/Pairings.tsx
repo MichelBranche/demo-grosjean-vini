@@ -98,10 +98,10 @@ export function Pairings() {
         const img = frame.querySelector<HTMLElement>('[data-pair-img]')
         if (!img) return
 
-        // Trigger on the panel so scrub works in both peek and open heights
         const from = i % 2 === 0 ? -14 : -10
         const to = i % 2 === 0 ? 14 : 10
 
+        // Per-frame trigger: works in peek (first recipe) and when fully open
         gsap.fromTo(
           img,
           { yPercent: from, force3D: true },
@@ -110,17 +110,18 @@ export function Pairings() {
             ease: 'none',
             force3D: true,
             scrollTrigger: {
-              trigger: panel,
+              trigger: frame,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: 0.5,
+              scrub: 0.55,
               invalidateOnRefresh: true,
             },
           },
         )
       })
-      ScrollTrigger.refresh()
     }, root)
+
+    ScrollTrigger.refresh()
   }
 
   const armReveal = () => {
@@ -172,6 +173,7 @@ export function Pairings() {
     }, root)
   }
 
+  // Keep peek height + veil in sync; parallax is armed separately so it works before expand
   useLayoutEffect(() => {
     const panel = panelRef.current
     const inner = innerRef.current
@@ -184,20 +186,16 @@ export function Pairings() {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const peek = peekHeightPx()
 
-    // First paint: closed peek, then arm parallax on settled layout
     if (!booted.current) {
       booted.current = true
       killReveal()
       gsap.set(panel, { height: peek, overflow: 'hidden' })
       gsap.set(veil, { autoAlpha: 1 })
-      armParallax()
       return
     }
 
     if (reduce) {
       killReveal()
-      parallaxCtx.current?.revert()
-      parallaxCtx.current = null
       gsap.set(panel, {
         height: open ? 'auto' : peek,
         overflow: open ? 'visible' : 'hidden',
@@ -221,6 +219,7 @@ export function Pairings() {
         height: full,
         duration: 1.05,
         ease: 'power3.inOut',
+        onUpdate: () => ScrollTrigger.refresh(),
         onComplete: () => {
           gsap.set(panel, { height: 'auto', overflow: 'visible' })
           armParallax()
@@ -241,6 +240,7 @@ export function Pairings() {
         height: peek,
         duration: 0.9,
         ease: 'power3.inOut',
+        onUpdate: () => ScrollTrigger.refresh(),
         onComplete: () => armParallax(),
       })
       veilTween.current = gsap.to(veil, {
@@ -257,9 +257,31 @@ export function Pairings() {
     }
   }, [open, locale])
 
+  // Parallax from first paint — refresh when Lenis / page wipe settle
+  useLayoutEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    armParallax()
+
+    const refresh = () => armParallax()
+    window.addEventListener('grosjean:page-ready', refresh)
+    const t1 = window.setTimeout(refresh, 120)
+    const t2 = window.setTimeout(refresh, 600)
+    const onResize = () => ScrollTrigger.refresh()
+    window.addEventListener('resize', onResize)
+
+    return () => {
+      window.removeEventListener('grosjean:page-ready', refresh)
+      window.removeEventListener('resize', onResize)
+      window.clearTimeout(t1)
+      window.clearTimeout(t2)
+      parallaxCtx.current?.revert()
+      parallaxCtx.current = null
+    }
+  }, [locale])
+
   useLayoutEffect(
     () => () => {
-      parallaxCtx.current?.revert()
       revealCtx.current?.revert()
     },
     [],
