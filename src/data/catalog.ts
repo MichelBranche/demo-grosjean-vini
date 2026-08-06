@@ -15,46 +15,16 @@ export type CatalogWine = {
 }
 
 export const catalogCategories: CatalogCategory[] = [
-  {
-    "slug": "rossi",
-    "name": "Rossi"
-  },
-  {
-    "slug": "bianchi",
-    "name": "Bianchi"
-  },
-  {
-    "slug": "rosati",
-    "name": "Rosati"
-  },
-  {
-    "slug": "bollicine",
-    "name": "Bollicine"
-  },
-  {
-    "slug": "classici",
-    "name": "Classici"
-  },
-  {
-    "slug": "selezioni",
-    "name": "Selezioni"
-  },
-  {
-    "slug": "edizione-limitata",
-    "name": "Edizione Limitata"
-  },
-  {
-    "slug": "magnum",
-    "name": "Magnum"
-  },
-  {
-    "slug": "wine-box",
-    "name": "Wine Box"
-  },
-  {
-    "slug": "birra",
-    "name": "Birra"
-  }
+  { slug: "rossi", name: "Rossi" },
+  { slug: "bianchi", name: "Bianchi" },
+  { slug: "rosati", name: "Rosati" },
+  { slug: "bollicine", name: "Bollicine" },
+  { slug: "classici", name: "Classici" },
+  { slug: "selezioni", name: "Selezioni" },
+  { slug: "edizione-limitata", name: "Edizione Limitata" },
+  { slug: "magnum", name: "Magnum" },
+  { slug: "wine-box", name: "Wine Box" },
+  { slug: "birra", name: "Birra" },
 ]
 
 export function getWineBySlug(slug: string): CatalogWine | undefined {
@@ -72,56 +42,56 @@ export function getRelatedWines(wine: CatalogWine, limit = 4): CatalogWine[] {
   return [...same, ...extra].slice(0, limit)
 }
 
-export function wineFormatKey(wine: CatalogWine): 'beer' | 'magnum' | 'box' | 'bottle' {
-  if (wine.categories.includes('birra')) return 'beer'
-  if (wine.categories.includes('magnum')) return 'magnum'
-  if (wine.categories.includes('wine-box')) return 'box'
-  return 'bottle'
+export function wineFormatKey(wine: CatalogWine): "beer" | "magnum" | "box" | "bottle" {
+  if (wine.categories.includes("birra")) return "beer"
+  if (wine.categories.includes("magnum")) return "magnum"
+  if (wine.categories.includes("wine-box")) return "box"
+  return "bottle"
 }
 
 export const catalogWines: CatalogWine[] = [
   {
-    "id": 60733,
-    "name": "l'Oriou Birra Artigianale",
-    "slug": "oriou-birra-artigianale",
+    "id": 1000,
+    "name": "L’Alpage Grape Ale",
+    "slug": "alpage-grape-ale",
     "price": "5,85 €",
     "category": "birra",
     "categories": [
       "birra"
     ],
-    "img": "https://grosjeanvins.it/files/2025/12/Oriou_png_singola-1-600x1046.png",
-    "permalink": "https://grosjeanvins.it/prodotto/oriou-birra-artigianale/"
+    "img": "/images/bottles/bottle-01.png",
+    "permalink": "/catalogo/alpage-grape-ale"
   },
   {
-    "id": 60097,
-    "name": "Gewurztraminer Vallée D’Aoste DOC",
-    "slug": "gewurztraminer-vallee-daoste-doc",
+    "id": 1001,
+    "name": "Gewürztraminer Altiere",
+    "slug": "gewurztraminer-altiere",
     "price": "18,50 €",
     "category": "classici",
     "categories": [
       "classici",
       "bianchi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Chardonnay-min-600x1697.png",
-    "permalink": "https://grosjeanvins.it/prodotto/gewurztraminer-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-02.png",
+    "permalink": "/catalogo/gewurztraminer-altiere"
   },
   {
-    "id": 59605,
-    "name": "HERACO Valle d'Aosta DOC Rosso",
-    "slug": "heraco-valle-daosta-doc-rosso",
+    "id": 1002,
+    "name": "Héritage Rouge Réserve",
+    "slug": "heritage-rouge-reserve",
     "price": "47,00 €",
     "category": "edizione-limitata",
     "categories": [
       "edizione-limitata",
       "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2025/01/Heraco-scontorno-138x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/heraco-valle-daosta-doc-rosso/"
+    "img": "/images/bottles/bottle-03.png",
+    "permalink": "/catalogo/heritage-rouge-reserve"
   },
   {
-    "id": 59507,
-    "name": "Montmary Rosé Metodo Classico Extra Brut Magnum",
-    "slug": "montmary-rose-metodo-classico-extra-brut-magnum",
+    "id": 1003,
+    "name": "Mont Blanc Rosé Magnum",
+    "slug": "mont-blanc-rose-magnum",
     "price": "54,00 €",
     "category": "bollicine",
     "categories": [
@@ -129,329 +99,329 @@ export const catalogWines: CatalogWine[] = [
       "magnum",
       "rosati"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Montmary-copia-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/montmary-rose-metodo-classico-extra-brut-magnum/"
+    "img": "/images/bottles/bottle-04.png",
+    "permalink": "/catalogo/mont-blanc-rose-magnum"
   },
   {
-    "id": 59501,
-    "name": "Mas Du Jario Blanc De Noir Extra Brut Magnum",
-    "slug": "mas-du-jario-blanc-de-noir-extra-brut-magnum",
+    "id": 1004,
+    "name": "Blanc de Roche Magnum",
+    "slug": "blanc-de-roche-magnum",
     "price": "69,00 €",
     "category": "bollicine",
     "categories": [
       "bollicine",
       "magnum"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/mas_du_jario-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/mas-du-jario-blanc-de-noir-extra-brut-magnum/"
+    "img": "/images/bottles/bottle-05.png",
+    "permalink": "/catalogo/blanc-de-roche-magnum"
   },
   {
-    "id": 59012,
-    "name": "Scatola Mista – Les Vins Introuvables",
-    "slug": "les_vins_introuvables",
+    "id": 1005,
+    "name": "Coffret Altura",
+    "slug": "coffret-altura",
     "price": "235,00 €",
     "category": "wine-box",
     "categories": [
       "wine-box"
     ],
     "img": "/images/catalog/scatola-mista.png",
-    "permalink": "https://grosjeanvins.it/prodotto/les_vins_introuvables/"
+    "permalink": "/catalogo/coffret-altura"
   },
   {
-    "id": 58749,
-    "name": "Donnas Superieur Vallée d'Aoste DOC",
-    "slug": "donnas",
+    "id": 1006,
+    "name": "Noir des Crêtes",
+    "slug": "noir-des-cretes",
     "price": "39,00 €",
     "category": "edizione-limitata",
     "categories": [
       "edizione-limitata",
       "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2024/05/Donnas-2021-1-600x1333.png",
-    "permalink": "https://grosjeanvins.it/prodotto/donnas/"
+    "img": "/images/bottles/bottle-07.png",
+    "permalink": "/catalogo/noir-des-cretes"
   },
   {
-    "id": 58440,
-    "name": "Flétry au Vent – Vino da Uve Stramature",
-    "slug": "fletry-au-vent",
+    "id": 1007,
+    "name": "Passerillé des Cimes",
+    "slug": "passerille-des-cimes",
     "price": "23,00 €",
     "category": "edizione-limitata",
     "categories": [
       "edizione-limitata",
       "bianchi"
     ],
-    "img": "https://grosjeanvins.it/files/2024/02/Fletry-145x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/fletry-au-vent/"
+    "img": "/images/bottles/bottle-08.png",
+    "permalink": "/catalogo/passerille-des-cimes"
   },
   {
-    "id": 221,
-    "name": "Pinot Noir Vigne Tzeriat Vallée d’Aoste DOC",
-    "slug": "pinot-noir-vigne-tzeriat-vallee-daoste-doc",
+    "id": 1008,
+    "name": "Pinot Noir Vigne Haute",
+    "slug": "pinot-noir-vigne-haute",
     "price": "25,00 €",
     "category": "selezioni",
     "categories": [
       "selezioni",
       "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Pinot-Noir-Tzeriat-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/pinot-noir-vigne-tzeriat-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-09.png",
+    "permalink": "/catalogo/pinot-noir-vigne-haute"
   },
   {
-    "id": 425,
-    "name": "Pinot Noir Les Freres Vallée D’Aoste DOC",
-    "slug": "pinot-noir-les-freres-vallee-daoste-doc",
+    "id": 1009,
+    "name": "Pinot Noir Les Frères",
+    "slug": "pinot-noir-les-freres",
     "price": "40,00 €",
     "category": "edizione-limitata",
     "categories": [
       "edizione-limitata",
       "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Pinot-Noir-Les-Freres-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/pinot-noir-les-freres-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-10.png",
+    "permalink": "/catalogo/pinot-noir-les-freres"
   },
   {
-    "id": 423,
-    "name": "Petite Arvine Les Freres Vallée D'Aosta DOC",
-    "slug": "petite-arvine-les-freres",
+    "id": 1010,
+    "name": "Arvine Blanche Les Frères",
+    "slug": "arvine-blanche-les-freres",
     "price": "38,00 €",
     "category": "edizione-limitata",
     "categories": [
       "edizione-limitata",
       "bianchi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Petite-Arvine-Les-Freres-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/petite-arvine-les-freres/"
+    "img": "/images/bottles/bottle-11.png",
+    "permalink": "/catalogo/arvine-blanche-les-freres"
   },
   {
-    "id": 415,
-    "name": "Forcé 1968 Extra Dry Vino spumante Metodo Martinotti",
-    "slug": "force-1968-extra-dry-vino-spumante-metodo-martinotti",
+    "id": 1011,
+    "name": "Force 1972 Extra Dry",
+    "slug": "force-1972-extra-dry",
     "price": "12,00 €",
     "category": "bollicine",
     "categories": [
       "bollicine"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/force_1968-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/force-1968-extra-dry-vino-spumante-metodo-martinotti/"
+    "img": "/images/bottles/bottle-12.png",
+    "permalink": "/catalogo/force-1972-extra-dry"
   },
   {
-    "id": 401,
-    "name": "Mas Du Jario Blanc De Noir Extra Brut",
-    "slug": "mas-du-jario-blanc-de-noir-extra-brut",
+    "id": 1012,
+    "name": "Blanc de Roche Extra Brut",
+    "slug": "blanc-de-roche-extra-brut",
     "price": "30,00 €",
     "category": "bollicine",
     "categories": [
       "bollicine"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/mas_du_jario-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/mas-du-jario-blanc-de-noir-extra-brut/"
+    "img": "/images/bottles/bottle-13.png",
+    "permalink": "/catalogo/blanc-de-roche-extra-brut"
   },
   {
-    "id": 391,
-    "name": "Clairetz Vino Rosso",
-    "slug": "clairet",
-    "price": "35,00 €",
-    "category": "edizione-limitata",
-    "categories": [
-      "edizione-limitata",
-      "rossi"
-    ],
-    "img": "https://grosjeanvins.it/files/2023/01/clairet-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/clairet/"
-  },
-  {
-    "id": 389,
-    "name": "Chambave Muscat Vallée D’Aoste DOC",
-    "slug": "chambave-muscat-vallee-daoste-doc",
-    "price": "19,00 €",
+    "id": 1013,
+    "name": "Clairet des Cimes",
+    "slug": "clairet-des-cimes",
+    "price": "28,00 €",
     "category": "selezioni",
     "categories": [
       "selezioni",
-      "bianchi"
-    ],
-    "img": "https://grosjeanvins.it/files/2023/01/chambave_muscat-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/chambave-muscat-vallee-daoste-doc/"
-  },
-  {
-    "id": 385,
-    "name": "Gamay Vallée d’Aoste DOC",
-    "slug": "gamay-vallee-daoste-doc",
-    "price": "12,00 €",
-    "category": "classici",
-    "categories": [
-      "classici",
       "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Gamay-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/gamay-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-14.png",
+    "permalink": "/catalogo/clairet-des-cimes"
   },
   {
-    "id": 381,
-    "name": "Chardonnay Vallée D’Aoste DOC",
-    "slug": "chardonnay-vallee-daoste-doc",
-    "price": "13,00 €",
+    "id": 1014,
+    "name": "Muscat des Alpes",
+    "slug": "muscat-des-alpes",
+    "price": "19,00 €",
     "category": "classici",
     "categories": [
       "classici",
       "bianchi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Chardonnay-min-600x1697.png",
-    "permalink": "https://grosjeanvins.it/prodotto/chardonnay-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-15.png",
+    "permalink": "/catalogo/muscat-des-alpes"
   },
   {
-    "id": 379,
-    "name": "Pinot Noir Vallée d’Aoste DOC",
-    "slug": "pinot-noir-vallee-daoste-doc",
-    "price": "17,50 €",
-    "category": "classici",
-    "categories": [
-      "classici",
-      "rossi"
-    ],
-    "img": "https://grosjeanvins.it/files/2023/01/Pinot-Noir-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/pinot-noir-vallee-daoste-doc/"
-  },
-  {
-    "id": 377,
-    "name": "Torrette Vallée d’Aoste DOC",
-    "slug": "torrette-vallee-daoste-doc",
+    "id": 1015,
+    "name": "Gamay Saint-Martin",
+    "slug": "gamay-saint-martin",
     "price": "14,00 €",
     "category": "classici",
     "categories": [
       "classici",
       "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Torrette-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/torrette-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-16.png",
+    "permalink": "/catalogo/gamay-saint-martin"
   },
   {
-    "id": 375,
-    "name": "Fumin Vallée d’Aoste DOC",
-    "slug": "fumin-vallee-daoste-doc",
-    "price": "21,00 €",
-    "category": "classici",
-    "categories": [
-      "classici",
-      "rossi"
-    ],
-    "img": "https://grosjeanvins.it/files/2023/01/fumin-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/fumin-vallee-daoste-doc/"
-  },
-  {
-    "id": 235,
-    "name": "Cornalin Vigne Rovettaz Vallée d’Aoste DOC",
-    "slug": "cornalin-vigne-rovettaz-vallee-daoste-doc",
-    "price": "21,80 €",
-    "category": "selezioni",
-    "categories": [
-      "selezioni",
-      "rossi"
-    ],
-    "img": "https://grosjeanvins.it/files/2023/01/Cornalin-Rovettaz-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/cornalin-vigne-rovettaz-vallee-daoste-doc/"
-  },
-  {
-    "id": 227,
-    "name": "Torrette Superieur Vigne Rovettaz Vallée d’Aoste DOC",
-    "slug": "torrette-superieur-vigne-rovettaz-vallee-daoste-doc",
-    "price": "22,00 €",
-    "category": "selezioni",
-    "categories": [
-      "selezioni",
-      "rossi"
-    ],
-    "img": "https://grosjeanvins.it/files/2023/01/torrette_superieur_rovettaz-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/torrette-superieur-vigne-rovettaz-vallee-daoste-doc/"
-  },
-  {
-    "id": 225,
-    "name": "Petite Arvine Chatel Argent Vallée d'Aoste DOC",
-    "slug": "petite-arvine-chatel-argent",
-    "price": "18,50 €",
+    "id": 1016,
+    "name": "Chardonnay Altitude",
+    "slug": "chardonnay-altitude",
+    "price": "13,00 €",
     "category": "classici",
     "categories": [
       "classici",
       "bianchi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Petite-Arvine-Chatel-Argent-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/petite-arvine-chatel-argent/"
+    "img": "/images/bottles/bottle-17.png",
+    "permalink": "/catalogo/chardonnay-altitude"
   },
   {
-    "id": 223,
-    "name": "Prëmetta Vallée d’Aoste DOC",
-    "slug": "premetta-vallee-daoste-doc",
-    "price": "23,00 €",
-    "category": "selezioni",
+    "id": 1017,
+    "name": "Pinot Noir Classique",
+    "slug": "pinot-noir-classique",
+    "price": "16,00 €",
+    "category": "classici",
     "categories": [
-      "selezioni",
-      "rosati"
+      "classici",
+      "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Premetta-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/premetta-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-18.png",
+    "permalink": "/catalogo/pinot-noir-classique"
   },
   {
-    "id": 219,
-    "name": "Montmary Rosé Metodo Classico Extra Brut",
-    "slug": "montmary-rose-metodo-classico-extra-brut",
-    "price": "23,00 €",
-    "category": "bollicine",
+    "id": 1018,
+    "name": "Rouge des Cimes",
+    "slug": "rouge-des-cimes",
+    "price": "15,00 €",
+    "category": "classici",
     "categories": [
-      "bollicine",
-      "rosati"
+      "classici",
+      "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Montmary-copia-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/montmary-rose-metodo-classico-extra-brut/"
+    "img": "/images/bottles/bottle-19.png",
+    "permalink": "/catalogo/rouge-des-cimes"
   },
   {
-    "id": 217,
-    "name": "Fumin Vigne Rovettaz Vallée d’Aoste DOC",
-    "slug": "fumin-vigne-rovettaz-vallee-daoste-doc",
-    "price": "30,00 €",
+    "id": 1019,
+    "name": "Noir d’Altitude",
+    "slug": "noir-d-altitude",
+    "price": "22,00 €",
+    "category": "classici",
+    "categories": [
+      "classici",
+      "rossi"
+    ],
+    "img": "/images/bottles/bottle-20.png",
+    "permalink": "/catalogo/noir-d-altitude"
+  },
+  {
+    "id": 1020,
+    "name": "Rouge Roche Cru",
+    "slug": "rouge-roche-cru",
+    "price": "27,00 €",
     "category": "selezioni",
     "categories": [
       "selezioni",
       "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Fumin-Rovettaz-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/fumin-vigne-rovettaz-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-21.png",
+    "permalink": "/catalogo/rouge-roche-cru"
   },
   {
-    "id": 215,
-    "name": "Chardonnay Le Vin de Michel Vallée D’Aoste DOC",
-    "slug": "chardonnay-le-vin-de-michel-vallee-daoste-doc",
+    "id": 1021,
+    "name": "Rouge des Cimes Supérieur",
+    "slug": "rouge-des-cimes-superieur",
+    "price": "29,00 €",
+    "category": "selezioni",
+    "categories": [
+      "selezioni",
+      "rossi"
+    ],
+    "img": "/images/bottles/bottle-22.png",
+    "permalink": "/catalogo/rouge-des-cimes-superieur"
+  },
+  {
+    "id": 1022,
+    "name": "Arvine Blanche Châtel",
+    "slug": "arvine-blanche-chatel",
+    "price": "24,00 €",
+    "category": "selezioni",
+    "categories": [
+      "selezioni",
+      "bianchi"
+    ],
+    "img": "/images/bottles/bottle-23.png",
+    "permalink": "/catalogo/arvine-blanche-chatel"
+  },
+  {
+    "id": 1023,
+    "name": "Rosé des Crêtes",
+    "slug": "rose-des-cretes",
+    "price": "14,50 €",
+    "category": "classici",
+    "categories": [
+      "classici",
+      "rosati"
+    ],
+    "img": "/images/bottles/bottle-24.png",
+    "permalink": "/catalogo/rose-des-cretes"
+  },
+  {
+    "id": 1024,
+    "name": "Mont Blanc Rosé Extra Brut",
+    "slug": "mont-blanc-rose-extra-brut",
+    "price": "26,00 €",
+    "category": "bollicine",
+    "categories": [
+      "bollicine",
+      "rosati"
+    ],
+    "img": "/images/bottles/bottle-25.png",
+    "permalink": "/catalogo/mont-blanc-rose-extra-brut"
+  },
+  {
+    "id": 1025,
+    "name": "Noir d’Altitude Cru",
+    "slug": "noir-d-altitude-cru",
+    "price": "32,00 €",
+    "category": "selezioni",
+    "categories": [
+      "selezioni",
+      "rossi"
+    ],
+    "img": "/images/bottles/bottle-26.png",
+    "permalink": "/catalogo/noir-d-altitude-cru"
+  },
+  {
+    "id": 1026,
+    "name": "Cuvée du Fondateur",
+    "slug": "cuvee-du-fondateur",
     "price": "33,00 €",
     "category": "selezioni",
     "categories": [
       "selezioni",
       "bianchi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Chardonnay-le-Vin-de-Michel-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/chardonnay-le-vin-de-michel-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-27.png",
+    "permalink": "/catalogo/cuvee-du-fondateur"
   },
   {
-    "id": 104,
-    "name": "Petite Arvine Vigne Rovettaz Vallée D’Aoste DOC",
-    "slug": "petite-arvine-vigne-rovettaz-vallee-daoste-doc",
+    "id": 1027,
+    "name": "Arvine Blanche Cru",
+    "slug": "arvine-blanche-cru",
     "price": "23,00 €",
     "category": "selezioni",
     "categories": [
       "selezioni",
       "bianchi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/petit_arvine_vigne_rovettaz-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/petite-arvine-vigne-rovettaz-vallee-daoste-doc/"
+    "img": "/images/bottles/bottle-28.png",
+    "permalink": "/catalogo/arvine-blanche-cru"
   },
   {
-    "id": 80,
-    "name": "Fumin #50anniDiVini",
-    "slug": "fumin-50annidivini",
+    "id": 1028,
+    "name": "Noir d’Altitude Anniversaire",
+    "slug": "noir-d-altitude-anniversaire",
     "price": "35,50 €",
     "category": "edizione-limitata",
     "categories": [
       "edizione-limitata",
       "rossi"
     ],
-    "img": "https://grosjeanvins.it/files/2023/01/Fumin-50-anni-divini-min-148x350.png",
-    "permalink": "https://grosjeanvins.it/prodotto/fumin-50annidivini/"
+    "img": "/images/bottles/bottle-29.png",
+    "permalink": "/catalogo/noir-d-altitude-anniversaire"
   }
 ]

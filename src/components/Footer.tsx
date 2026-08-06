@@ -5,22 +5,22 @@ import { useI18n } from '../i18n/I18nProvider'
 const socialLinks = [
   {
     label: 'Facebook',
-    href: 'https://www.facebook.com/grosjeanvins/',
+    href: '#',
     path: 'M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H9v3h2v7h3v-7h2.5l.5-3H14V9z',
   },
   {
     label: 'Instagram',
-    href: 'https://www.instagram.com/grosjean.vins/',
+    href: '#',
     path: 'M12 7.2A4.8 4.8 0 1 0 12 16.8 4.8 4.8 0 0 0 12 7.2zm0 7.9a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2zm6.1-8.2a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0zM12 4.2c-2.1 0-2.4 0-3.2.1-.8 0-1.4.2-1.9.4a3.9 3.9 0 0 0-1.4 1.4c-.2.5-.3 1.1-.4 1.9-.1.8-.1 1.1-.1 3.2s0 2.4.1 3.2c0 .8.2 1.4.4 1.9.3.5.7 1 1.4 1.4.5.2 1.1.3 1.9.4.8.1 1.1.1 3.2.1s2.4 0 3.2-.1c.8 0 1.4-.2 1.9-.4a3.9 3.9 0 0 0 1.4-1.4c.2-.5.3-1.1.4-1.9.1-.8.1-1.1.1-3.2s0-2.4-.1-3.2c0-.8-.2-1.4-.4-1.9a3.9 3.9 0 0 0-1.4-1.4c-.5-.2-1.1-.3-1.9-.4-.8-.1-1.1-.1-3.2-.1zm0 1.5c2.1 0 2.3 0 3.1.1.8 0 1.2.2 1.5.3.4.2.7.4 1 .7.3.3.5.6.7 1 .1.3.2.7.3 1.5.1.8.1 1 .1 3.1s0 2.3-.1 3.1c0 .8-.2 1.2-.3 1.5-.2.4-.4.7-.7 1-.3.3-.6.5-1 .7-.3.1-.7.2-1.5.3-.8.1-1 .1-3.1.1s-2.3 0-3.1-.1c-.8 0-1.2-.2-1.5-.3-.4-.2-.7-.4-1-.7-.3-.3-.5-.6-.7-1-.1-.3-.2-.7-.3-1.5-.1-.8-.1-1-.1-3.1s0-2.3.1-3.1c0-.8.2-1.2.3-1.5.2-.4.4-.7.7-1 .3-.3.6-.5 1-.7.3-.1.7-.2 1.5-.3.8-.1 1-.1 3.1-.1z',
   },
   {
     label: 'YouTube',
-    href: 'https://www.youtube.com/channel/UClXTQFWf8YgrEcyBdRzpsSA',
+    href: '#',
     path: 'M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z',
   },
   {
     label: 'TikTok',
-    href: 'https://www.tiktok.com/@grosjean.vins',
+    href: '#',
     path: 'M19.6 8.4c-1.5-.1-2.9-.7-4-1.6v7.3a5.7 5.7 0 1 1-5.7-5.7c.3 0 .6 0 .9.1v2.9a2.8 2.8 0 1 0 2 2.7V2.5h2.8c.1 1.6.8 3.1 1.9 4.2a5.8 5.8 0 0 0 3.1 1.5v2.9a8.5 8.5 0 0 1-1-.2z',
   },
 ]
@@ -164,7 +164,7 @@ export function Footer() {
     { key: 'footer.shop.classici', href: '/catalogo' },
     { key: 'footer.shop.selezioni', href: '/catalogo' },
     { key: 'footer.shop.bollicine', href: '/catalogo' },
-    { key: 'footer.shop.degustazione', href: 'https://grosjeanvins.it/degustazione/' },
+    { key: 'footer.shop.degustazione', href: '/#degustazione' },
   ] as const
 
   const infoLinks = [
@@ -174,7 +174,7 @@ export function Footer() {
     { key: 'footer.info.degustazione', href: '/#degustazione' },
     { key: 'footer.info.visita', href: '/#visita' },
     { key: 'footer.info.catalogo', href: '/catalogo' },
-    { key: 'footer.info.contatti', href: 'mailto:info@grosjeanvins.it' },
+    { key: 'footer.info.contatti', href: 'mailto:hello@maisonaltura.demo' },
   ] as const
 
   const toggle = (key: 'shop' | 'info' | 'contact') =>
@@ -226,13 +226,13 @@ export function Footer() {
             >
               <div className="space-y-1 font-body text-[0.95rem] leading-[1.7]">
                 <p>
-                  <a href="tel:+390165775791" className="transition-opacity hover:opacity-55">
-                    +39 0165 77 57 91
+                  <a href="tel:+390000000000" className="transition-opacity hover:opacity-55">
+                    +39 000 000 0000
                   </a>
                 </p>
                 <p>
                   <a
-                    href="mailto:info@grosjeanvins.it"
+                    href="mailto:hello@maisonaltura.demo"
                     className="underline decoration-ink/25 underline-offset-4 transition-opacity hover:opacity-55"
                   >
                     {t('footer.writeUs')}
@@ -243,7 +243,7 @@ export function Footer() {
           </div>
 
           <p className="mt-10 px-2 text-center font-body text-[clamp(3rem,15vw,5.5rem)] font-semibold uppercase leading-[0.92] tracking-[0.06em]">
-            Grosjean
+            Altura
             <span className="relative -top-[0.55em] ml-[0.02em] inline-block text-[0.38em] leading-none tracking-normal">
               ®
             </span>
@@ -255,14 +255,14 @@ export function Footer() {
             <DrinkMark className="h-9" />
 
             <p className="max-w-[22rem] text-center font-body text-[0.65rem] leading-relaxed text-ink-2">
-              Società Agricola Grosjean Vins s.s. · P.IVA 00536390073
+              Maison Altura S.r.l. — demo · P.IVA 00000000000
               <br />
-              Fraz. Ollignan 2, 11020 Quart (AO)
+              Les Hauts, Saint-Martin — Alpi
             </p>
 
             <div className="flex items-center gap-6 font-body text-[0.82rem]">
               <a
-                href="https://grosjeanvins.it/"
+                href="/catalogo"
                 target="_blank"
                 rel="noreferrer"
                 className="transition-opacity hover:opacity-55"
@@ -270,7 +270,7 @@ export function Footer() {
                 {t('footer.terms')}
               </a>
               <a
-                href="https://grosjeanvins.it/"
+                href="/catalogo"
                 target="_blank"
                 rel="noreferrer"
                 className="transition-opacity hover:opacity-55"
@@ -282,7 +282,7 @@ export function Footer() {
             <p className="font-body text-[0.75rem] text-ink-2">
               {t('footer.designBy')}{' '}
               <a
-                href="https://michelbranche.it"
+                href="https://www.michelbranche.it"
                 target="_blank"
                 rel="noreferrer"
                 className="underline decoration-ink/40 underline-offset-4 transition-opacity hover:opacity-55"
@@ -294,10 +294,10 @@ export function Footer() {
         </div>
       </div>
 
-      {/* ——— Desktop ——— */}
+      {/* ——— Desktop — same content column as Catalog / Checkout ——— */}
       <div className="hidden lg:block">
-        <div className="mx-auto max-w-[1400px] px-10 pt-24 xl:px-14">
-          <div className="grid grid-cols-4 items-start gap-x-10 xl:gap-x-14">
+        <div className="mx-auto max-w-[1400px] px-5 pt-24 md:px-10 lg:px-14">
+          <div className="grid grid-cols-4 items-start gap-x-8 xl:gap-x-12">
             <div className="min-w-0">
               <FooterHeading>{t('footer.heritageTitle')}</FooterHeading>
               <p className="mt-5 max-w-[28ch] font-body text-[0.95rem] leading-[1.65] text-ink">
@@ -332,15 +332,15 @@ export function Footer() {
               <ul className="mt-5">
                 <li>
                   <a
-                    href="tel:+390165775791"
+                    href="tel:+390000000000"
                     className="block py-0.5 font-body text-[0.95rem] leading-[1.65] text-ink transition-opacity hover:opacity-55"
                   >
-                    +39 0165 77 57 91
+                    +39 000 000 0000
                   </a>
                 </li>
                 <li>
                   <a
-                    href="mailto:info@grosjeanvins.it"
+                    href="mailto:hello@maisonaltura.demo"
                     className="block py-0.5 font-body text-[0.95rem] leading-[1.65] text-ink transition-opacity hover:opacity-55"
                   >
                     {t('footer.writeUs')}
@@ -354,27 +354,31 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mx-auto max-w-[1400px] overflow-x-clip px-10 pb-16 pt-20 xl:px-14">
-          <p className="text-center font-body text-[clamp(3.5rem,15vw,14.5rem)] font-semibold uppercase leading-[0.92] tracking-[0.06em] text-ink">
-            Grosjean
-            <span className="relative -top-[0.55em] ml-[0.02em] inline-block text-[0.38em] leading-none tracking-normal">
-              ®
+        <div className="w-full overflow-x-clip px-2 pb-10 pt-16 md:px-3 md:pb-12 md:pt-20">
+          <p className="text-center font-body text-[clamp(5rem,22vw,28rem)] font-semibold uppercase leading-[0.82] tracking-[0.04em] text-ink">
+            <span className="relative inline-block">
+              Altura
+              <span className="absolute left-[100%] top-0 ml-[0.02em] -translate-y-[0.55em] text-[0.38em] leading-none tracking-normal">
+                ®
+              </span>
             </span>
           </p>
         </div>
 
         <div className="border-t border-line/60">
-          <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-8 px-10 py-9 xl:px-14">
-            <DrinkMark className="h-8" />
+          <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-8 px-5 py-9 md:px-10 lg:px-14">
+            <div className="justify-self-start">
+              <DrinkMark className="h-8" />
+            </div>
 
             <p className="max-w-[36rem] text-center font-body text-[0.68rem] leading-relaxed text-ink-2">
-              Società Agricola Grosjean Vins s.s. · P.IVA 00536390073 · Fraz. Ollignan 2, 11020 Quart
+              Maison Altura S.r.l. — demo · P.IVA 00000000000 · Les Hauts, Saint-Martin — Alpi
               (AO)
             </p>
 
-            <div className="flex shrink-0 items-center gap-6 font-body text-[0.82rem]">
+            <div className="flex shrink-0 items-center justify-self-end gap-6 font-body text-[0.82rem]">
               <a
-                href="https://grosjeanvins.it/"
+                href="/catalogo"
                 target="_blank"
                 rel="noreferrer"
                 className="transition-opacity hover:opacity-55"
@@ -382,7 +386,7 @@ export function Footer() {
                 {t('footer.terms')}
               </a>
               <a
-                href="https://grosjeanvins.it/"
+                href="/catalogo"
                 target="_blank"
                 rel="noreferrer"
                 className="transition-opacity hover:opacity-55"
@@ -392,7 +396,7 @@ export function Footer() {
               <span className="text-ink-2">
                 {t('footer.designBy')}{' '}
                 <a
-                  href="https://michelbranche.it"
+                  href="https://www.michelbranche.it"
                   target="_blank"
                   rel="noreferrer"
                   className="underline decoration-ink/40 underline-offset-4 transition-opacity hover:opacity-55"

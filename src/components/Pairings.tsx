@@ -1,39 +1,39 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+﻿import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { catalogWines } from '../data/catalog'
 import { useI18n } from '../i18n/I18nProvider'
+import { TextCta } from './TextCta'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const RECIPE_META = [
   {
-    wine: 'Chambave Muscat',
+    wine: 'Muscat des Alpes',
     img: '/images/pair-muscat.png',
     key: 'r1',
     ings: 9,
-    wineSlug: 'chambave-muscat-vallee-daoste-doc',
+    wineSlug: 'muscat-des-alpes',
   },
   {
-    wine: 'Chardonnay',
+    wine: 'Chardonnay Altitude',
     img: '/images/pair-chardonnay.png',
     key: 'r2',
     ings: 8,
-    wineSlug: 'chardonnay-vallee-daoste-doc',
+    wineSlug: 'chardonnay-altitude',
   },
   {
-    wine: 'Le Vin de Michel',
+    wine: 'Cuvée du Fondateur',
     img: '/images/pair-michel.png',
     key: 'r3',
     ings: 7,
-    wineSlug: 'chardonnay-le-vin-de-michel-vallee-daoste-doc',
+    wineSlug: 'cuvee-du-fondateur',
   },
   {
-    wine: 'Clairet',
+    wine: 'Clairet des Cimes',
     img: '/images/pair-clairetz.png',
     key: 'r4',
     ings: 9,
-    wineSlug: 'clairet',
+    wineSlug: 'clairet-des-cimes',
   },
 ] as const
 
@@ -57,18 +57,15 @@ export function Pairings() {
 
   const recipes = useMemo(
     () =>
-      RECIPE_META.map((r) => {
-        const product = catalogWines.find((w) => w.slug === r.wineSlug)
-        return {
+      RECIPE_META.map((r) => ({
           wine: r.wine,
           img: r.img,
           dish: t(`pairings.${r.key}.dish`),
           steps: t(`pairings.${r.key}.steps`),
           wineNote: t(`pairings.${r.key}.wineNote`),
-          shopUrl: product?.permalink ?? `https://grosjeanvins.it/prodotto/${r.wineSlug}/`,
+          shopUrl: `/catalogo/${r.wineSlug}`,
           ingredients: Array.from({ length: r.ings }, (_, i) => t(`pairings.${r.key}.i${i}`)),
-        }
-      }),
+      })),
     [t, locale],
   )
 
@@ -88,20 +85,19 @@ export function Pairings() {
     parallaxCtx.current?.revert()
     parallaxCtx.current = null
     const root = sectionRef.current
-    const panel = panelRef.current
-    if (!root || !panel) return
+    if (!root) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     parallaxCtx.current = gsap.context(() => {
-      const frames = gsap.utils.toArray<HTMLElement>('[data-pair-frame]', root)
-      frames.forEach((frame, i) => {
-        const img = frame.querySelector<HTMLElement>('[data-pair-img]')
+      const articles = gsap.utils.toArray<HTMLElement>('[data-pair-article]', root)
+      articles.forEach((article, i) => {
+        const img = article.querySelector<HTMLElement>('[data-pair-img]')
         if (!img) return
 
         const from = i % 2 === 0 ? -14 : -10
         const to = i % 2 === 0 ? 14 : 10
 
-        // Per-frame trigger: works in peek (first recipe) and when fully open
+        // Article trigger — same pattern as visita/visione; works in peek + open
         gsap.fromTo(
           img,
           { yPercent: from, force3D: true },
@@ -110,10 +106,10 @@ export function Pairings() {
             ease: 'none',
             force3D: true,
             scrollTrigger: {
-              trigger: frame,
+              trigger: article,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: 0.55,
+              scrub: 0.65,
               invalidateOnRefresh: true,
             },
           },
@@ -191,6 +187,11 @@ export function Pairings() {
       killReveal()
       gsap.set(panel, { height: peek, overflow: 'hidden' })
       gsap.set(veil, { autoAlpha: 1 })
+      // Arm parallax immediately in peek mode (don't wait for first expand)
+      if (!reduce) {
+        armParallax()
+        requestAnimationFrame(() => ScrollTrigger.refresh())
+      }
       return
     }
 
@@ -208,7 +209,7 @@ export function Pairings() {
     if (open) {
       killReveal()
       gsap.set(inner.querySelectorAll('[data-pair-copy], [data-pair-frame]'), {
-        clearProps: 'all',
+        clearProps: 'transform,opacity,visibility',
       })
       gsap.set(panel, { overflow: 'hidden', height: panel.offsetHeight || peek })
       gsap.set(panel, { height: 'auto' })
@@ -222,7 +223,7 @@ export function Pairings() {
         onUpdate: () => ScrollTrigger.refresh(),
         onComplete: () => {
           gsap.set(panel, { height: 'auto', overflow: 'visible' })
-          armParallax()
+          ScrollTrigger.refresh()
           armReveal()
         },
       })
@@ -241,7 +242,7 @@ export function Pairings() {
         duration: 0.9,
         ease: 'power3.inOut',
         onUpdate: () => ScrollTrigger.refresh(),
-        onComplete: () => armParallax(),
+        onComplete: () => ScrollTrigger.refresh(),
       })
       veilTween.current = gsap.to(veil, {
         autoAlpha: 1,
@@ -257,24 +258,37 @@ export function Pairings() {
     }
   }, [open, locale])
 
-  // Parallax from first paint — refresh when Lenis / page wipe settle
+  // Parallax always on — same lifecycle as other site media parallaxes
   useLayoutEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     armParallax()
 
-    const refresh = () => armParallax()
-    window.addEventListener('grosjean:page-ready', refresh)
-    const t1 = window.setTimeout(refresh, 120)
-    const t2 = window.setTimeout(refresh, 600)
+    const refresh = () => {
+      armParallax()
+      ScrollTrigger.refresh()
+    }
+    window.addEventListener('altura:page-ready', refresh)
+    const t1 = window.setTimeout(refresh, 80)
+    const t2 = window.setTimeout(refresh, 400)
+    const t3 = window.setTimeout(() => ScrollTrigger.refresh(), 900)
     const onResize = () => ScrollTrigger.refresh()
     window.addEventListener('resize', onResize)
 
+    const panel = panelRef.current
+    const ro =
+      typeof ResizeObserver !== 'undefined' && panel
+        ? new ResizeObserver(() => ScrollTrigger.refresh())
+        : null
+    if (panel && ro) ro.observe(panel)
+
     return () => {
-      window.removeEventListener('grosjean:page-ready', refresh)
+      window.removeEventListener('altura:page-ready', refresh)
       window.removeEventListener('resize', onResize)
       window.clearTimeout(t1)
       window.clearTimeout(t2)
+      window.clearTimeout(t3)
+      ro?.disconnect()
       parallaxCtx.current?.revert()
       parallaxCtx.current = null
     }
@@ -387,15 +401,12 @@ export function Pairings() {
                     <p className="mt-3 border-t border-line pt-4 font-body text-[0.95rem] leading-[1.7] text-ink-2 md:mt-4 md:text-[0.98rem]">
                       {r.wineNote}
                     </p>
-                    <a
-                      href={r.shopUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-5 inline-flex items-center gap-2 font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-ink underline decoration-ink/30 underline-offset-[6px] transition-opacity hover:opacity-55"
+                    <TextCta
+                      to={r.shopUrl}
+                      className="mt-5 font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-ink underline decoration-ink/30 underline-offset-[6px] transition-opacity hover:opacity-55"
                     >
                       {t('pairings.shop')}
-                      <span aria-hidden>→</span>
-                    </a>
+                    </TextCta>
                   </div>
                 </div>
               </article>
@@ -417,3 +428,4 @@ export function Pairings() {
     </section>
   )
 }
+

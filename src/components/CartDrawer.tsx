@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useCart, formatPrice } from '../cart/CartProvider'
 import { useI18n } from '../i18n/I18nProvider'
 
 export function CartDrawer() {
   const { t } = useI18n()
+  const navigate = useNavigate()
   const { items, open, setOpen, total, setQty, removeItem, clear, count } = useCart()
 
   useEffect(() => {
@@ -141,10 +143,10 @@ export function CartDrawer() {
             type="button"
             disabled={items.length === 0}
             onClick={() => {
-              /* checkout disabled in demo */
+              setOpen(false)
+              navigate('/checkout')
             }}
             className="mt-5 w-full bg-ink px-4 py-3.5 font-body text-[0.78rem] tracking-[0.14em] uppercase text-paper transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-35"
-            title={t('demo.disabled')}
           >
             {t('cart.checkout')}
           </button>

@@ -9,7 +9,7 @@ import {
 } from 'react'
 import type { CatalogWine } from '../data/catalog'
 
-const STORAGE_KEY = 'grosjean-cart'
+const STORAGE_KEY = 'altura-cart'
 
 export type CartItem = {
   id: number
@@ -27,6 +27,8 @@ type CartContextValue = {
   total: number
   open: boolean
   setOpen: (open: boolean) => void
+  /** Increments when items are added — used to animate the header cart icon. */
+  bump: number
   addItem: (wine: CatalogWine, qty?: number) => void
   removeItem: (id: number) => void
   setQty: (id: number, qty: number) => void
@@ -59,6 +61,7 @@ function loadCart(): CartItem[] {
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [open, setOpen] = useState(false)
+  const [bump, setBump] = useState(0)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -92,7 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         },
       ]
     })
-    setOpen(true)
+    setBump((n) => n + 1)
   }, [])
 
   const removeItem = useCallback((id: number) => {
@@ -112,8 +115,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CartContextValue>(() => {
     const count = items.reduce((sum, i) => sum + i.qty, 0)
     const total = items.reduce((sum, i) => sum + i.priceValue * i.qty, 0)
-    return { items, count, total, open, setOpen, addItem, removeItem, setQty, clear }
-  }, [items, open, addItem, removeItem, setQty, clear])
+    return { items, count, total, open, setOpen, bump, addItem, removeItem, setQty, clear }
+  }, [items, open, bump, addItem, removeItem, setQty, clear])
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }

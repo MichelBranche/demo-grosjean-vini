@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 export function Catalog() {
   const { t } = useI18n()
-  const { addItem, items } = useCart()
+  const { addItem, items, setQty } = useCart()
   const [searchParams, setSearchParams] = useSearchParams()
   const paramCat = searchParams.get('c')
   const initial =
@@ -43,10 +43,10 @@ export function Catalog() {
 
   useEffect(() => {
     const open = () => setGate(true)
-    window.addEventListener('grosjean:page-ready', open)
+    window.addEventListener('altura:page-ready', open)
     const fallback = window.setTimeout(open, 700)
     return () => {
-      window.removeEventListener('grosjean:page-ready', open)
+      window.removeEventListener('altura:page-ready', open)
       window.clearTimeout(fallback)
     }
   }, [])
@@ -179,8 +179,9 @@ export function Catalog() {
           className="grid grid-cols-2 gap-x-4 gap-y-14 sm:gap-x-6 md:grid-cols-3 md:gap-x-8 md:gap-y-20 lg:grid-cols-4"
         >
           {wines.map((w) => {
-            const isBoxShot = w.slug === 'les_vins_introuvables' || w.categories.includes('wine-box')
-            const inCart = items.some((i) => i.id === w.id)
+            const isBoxShot = w.slug === 'coffret-altura' || w.categories.includes('wine-box')
+            const cartItem = items.find((i) => i.id === w.id)
+            const qty = cartItem?.qty ?? 0
 
             return (
               <article
@@ -215,27 +216,39 @@ export function Catalog() {
                       </div>
                     )}
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => addItem(w)}
-                    aria-label={inCart ? t('cart.added') : t('cart.add')}
-                    className={
-                      inCart
-                        ? 'absolute right-0 bottom-[12%] z-10 flex h-10 w-10 items-center justify-center rounded-full bg-wine text-paper shadow-[0_6px_18px_rgba(40,28,20,0.18)] transition-[transform,background-color] duration-300 hover:scale-105 active:scale-95 md:h-11 md:w-11'
-                        : 'absolute right-0 bottom-[12%] z-10 flex h-10 w-10 items-center justify-center rounded-full border border-ink/20 bg-paper/90 text-ink shadow-[0_6px_18px_rgba(40,28,20,0.12)] backdrop-blur-[2px] transition-[transform,background-color,border-color,color] duration-300 hover:border-ink hover:bg-ink hover:text-paper active:scale-95 md:h-11 md:w-11'
-                    }
-                  >
-                    {inCart ? (
-                      <svg viewBox="0 0 24 24" className="h-[1.05rem] w-[1.05rem]" fill="none" aria-hidden>
-                        <path
-                          d="M5 12.5l4.2 4.2L19 7"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    ) : (
+                  {qty > 0 ? (
+                    <div
+                      className="absolute right-0 bottom-[12%] z-10 flex h-10 items-center overflow-hidden rounded-full border border-ink/15 bg-paper/95 text-ink shadow-[0_6px_18px_rgba(40,28,20,0.12)] backdrop-blur-[2px] md:h-11"
+                      role="group"
+                      aria-label={t('product.qty')}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setQty(w.id, qty - 1)}
+                        aria-label={t('cart.decrease')}
+                        className="flex h-full w-9 items-center justify-center font-body text-[1.05rem] leading-none transition-opacity hover:opacity-55 active:scale-95 md:w-10"
+                      >
+                        −
+                      </button>
+                      <span className="min-w-[1.35rem] text-center font-body text-[0.82rem] font-semibold tabular-nums md:text-[0.88rem]">
+                        {qty}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => addItem(w)}
+                        aria-label={t('cart.increase')}
+                        className="flex h-full w-9 items-center justify-center font-body text-[1.05rem] leading-none transition-opacity hover:opacity-55 active:scale-95 md:w-10"
+                      >
+                        +
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => addItem(w)}
+                      aria-label={t('cart.add')}
+                      className="absolute right-0 bottom-[12%] z-10 flex h-10 w-10 items-center justify-center rounded-full border border-ink/20 bg-paper/90 text-ink shadow-[0_6px_18px_rgba(40,28,20,0.12)] backdrop-blur-[2px] transition-[transform,background-color,border-color,color] duration-300 hover:border-ink hover:bg-ink hover:text-paper active:scale-95 md:h-11 md:w-11"
+                    >
                       <svg viewBox="0 0 24 24" className="h-[1.1rem] w-[1.1rem]" fill="none" aria-hidden>
                         <path
                           d="M12 5v14M5 12h14"
@@ -244,8 +257,8 @@ export function Catalog() {
                           strokeLinecap="round"
                         />
                       </svg>
-                    )}
-                  </button>
+                    </button>
+                  )}
                 </div>
                 <h2 className="mt-6 max-w-[18ch] font-body text-[0.92rem] font-semibold leading-snug tracking-tight md:text-[1.05rem]">
                   <Link to={`/catalogo/${w.slug}`} className="transition-opacity hover:opacity-55">

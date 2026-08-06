@@ -30,10 +30,10 @@ function ScrollToHash() {
     const onReady = () => {
       window.setTimeout(scrollToTarget, 80)
     }
-    window.addEventListener('grosjean:page-ready', onReady)
+    window.addEventListener('altura:page-ready', onReady)
     const fallback = window.setTimeout(scrollToTarget, 1600)
     return () => {
-      window.removeEventListener('grosjean:page-ready', onReady)
+      window.removeEventListener('altura:page-ready', onReady)
       window.clearTimeout(fallback)
     }
   }, [pathname, hash])

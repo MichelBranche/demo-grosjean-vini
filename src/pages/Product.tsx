@@ -46,7 +46,7 @@ export function Product() {
   const tasting = details?.tasting
   const inCart = wine ? items.some((i) => i.id === wine.id) : false
   const isBoxShot =
-    wine?.slug === 'les_vins_introuvables' || wine?.categories.includes('wine-box')
+    wine?.slug === 'coffret-altura' || wine?.categories.includes('wine-box')
 
   useEffect(() => {
     setQty(1)
@@ -168,7 +168,7 @@ export function Product() {
               <dt className="text-[0.68rem] tracking-[0.14em] uppercase text-ink-2">
                 {t('product.producer')}
               </dt>
-              <dd className="mt-1.5">Grosjean Vins</dd>
+              <dd className="mt-1.5">Maison Altura</dd>
             </div>
           </dl>
 
@@ -311,7 +311,7 @@ export function Product() {
 
 function RelatedCard({ wine, label }: { wine: CatalogWine; label: string }) {
   const isBoxShot =
-    wine.slug === 'les_vins_introuvables' || wine.categories.includes('wine-box')
+    wine.slug === 'coffret-altura' || wine.categories.includes('wine-box')
 
   return (
     <article className="group flex flex-col items-center text-center">

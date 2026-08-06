@@ -49,7 +49,7 @@ for (const w of wines) {
   process.stdout.write(`Fetching ${w.slug}...\n`)
   try {
     const res = await fetch(w.permalink, {
-      headers: { 'User-Agent': 'Mozilla/5.0 GrosjeanDemoBot/1.0' },
+      headers: { 'User-Agent': 'Mozilla/5.0 AlturaDemoBot/1.0' },
     })
     if (!res.ok) {
       out[w.slug] = { error: res.status }

@@ -6,29 +6,32 @@ import { useCart } from '../cart/CartProvider'
 import { LanguageSwitcher } from './LanguageSwitcher'
 
 const POPULAR_SLUGS = [
-  'torrette-vallee-daoste-doc',
-  'fumin-vallee-daoste-doc',
-  'petite-arvine-vigne-rovettaz-vallee-daoste-doc',
-  'chardonnay-vallee-daoste-doc',
-  'pinot-noir-vallee-daoste-doc',
-  'montmary-rose-metodo-classico-extra-brut',
+  'rouge-des-cimes',
+  'noir-d-altitude',
+  'arvine-blanche-cru',
+  'chardonnay-altitude',
+  'pinot-noir-classique',
+  'mont-blanc-rose-extra-brut',
 ]
 
 const SEARCH_CAT_SLUGS = ['rossi', 'bianchi', 'rosati', 'bollicine', 'classici', 'selezioni']
 
 export function Header() {
   const { t, locale } = useI18n()
-  const { count, setOpen: setCartOpen } = useCart()
+  const { count, bump, setOpen: setCartOpen } = useCart()
   const [open, setOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [demoTip, setDemoTip] = useState(false)
   const [query, setQuery] = useState('')
   const [scrolled, setScrolled] = useState(false)
   const [previewId, setPreviewId] = useState<number | null>(null)
+  const [cartBump, setCartBump] = useState(false)
+  const cartBumpTimer = useRef<number | null>(null)
   const location = useLocation()
   const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
   const demoTipRef = useRef<HTMLDivElement>(null)
   const demoTipTimer = useRef<number | null>(null)
   const floatRef = useRef<HTMLDivElement>(null)
@@ -181,6 +184,21 @@ export function Header() {
   }, [])
 
   useEffect(() => {
+    if (bump === 0) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    setCartBump(false)
+    // Restart CSS animation even on consecutive adds
+    window.requestAnimationFrame(() => {
+      setCartBump(true)
+      if (cartBumpTimer.current) window.clearTimeout(cartBumpTimer.current)
+      cartBumpTimer.current = window.setTimeout(() => setCartBump(false), 650)
+    })
+    return () => {
+      if (cartBumpTimer.current) window.clearTimeout(cartBumpTimer.current)
+    }
+  }, [bump])
+
+  useEffect(() => {
     setOpen(false)
     setSearchOpen(false)
     setDemoTip(false)
@@ -223,6 +241,7 @@ export function Header() {
     if (open) {
       document.body.style.overflow = 'hidden'
       lenis?.stop()
+      mobileMenuRef.current?.scrollTo({ top: 0 })
     } else {
       document.body.style.overflow = ''
       lenis?.start()
@@ -321,7 +340,7 @@ export function Header() {
           }}
           className="nav-brand absolute left-1/2 top-1/2 z-[70] -translate-x-1/2 -translate-y-1/2 font-body text-[1.25rem] font-semibold tracking-[0.05em] uppercase sm:text-[1.4rem] md:text-[1.6rem]"
         >
-          Grosjean
+          Altura
           <span className="relative -top-[0.55em] ml-[0.02em] inline-block text-[0.38em] leading-none tracking-normal">
             ®
           </span>
@@ -395,7 +414,7 @@ export function Header() {
 
           <button
             type="button"
-            className="nav-icon relative text-ink"
+            className={`nav-icon relative text-ink${cartBump ? ' cart-icon-bump' : ''}`}
             aria-label={t('cart.aria')}
             onClick={() => {
               setSearchOpen(false)
@@ -418,7 +437,10 @@ export function Header() {
               />
             </svg>
             {count > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-[1.15rem] min-w-[1.15rem] items-center justify-center rounded-full bg-wine px-1 font-body text-[0.62rem] font-semibold leading-none text-paper">
+              <span
+                key={bump}
+                className={`absolute -right-2 -top-2 flex h-[1.15rem] min-w-[1.15rem] items-center justify-center rounded-full bg-wine px-1 font-body text-[0.62rem] font-semibold leading-none text-paper${cartBump ? ' cart-badge-bump' : ''}`}
+              >
                 {count > 99 ? '99+' : count}
               </span>
             )}
@@ -552,19 +574,14 @@ export function Header() {
       ) : null}
 
       <div
-        className={`fixed inset-0 z-[55] lg:hidden ${
+        ref={mobileMenuRef}
+        className={`fixed inset-0 z-[55] overflow-y-auto overscroll-y-contain bg-paper [-webkit-overflow-scrolling:touch] lg:hidden ${
           open ? 'pointer-events-auto visible' : 'pointer-events-none invisible'
         }`}
         aria-hidden={!open}
       >
-        <div
-          className={`absolute inset-0 bg-paper transition-opacity duration-500 ease-out ${
-            open ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-
         <nav
-          className={`relative flex h-full flex-col justify-between px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[6.25rem] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          className={`flex min-h-full flex-col justify-between px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[6.25rem] transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`}
           aria-label={t('nav.ariaMobile')}
@@ -581,7 +598,7 @@ export function Header() {
                 <Link
                   to={l.href}
                   onClick={() => setOpen(false)}
-                  className="nav-mobile-link py-5 font-body text-[clamp(1.5rem,6.5vw,1.95rem)] font-semibold tracking-[0.04em] uppercase"
+                  className="nav-mobile-link block py-4 font-body text-[clamp(1.35rem,6vw,1.95rem)] font-semibold tracking-[0.04em] uppercase sm:py-5"
                 >
                   {l.label}
                 </Link>
@@ -590,24 +607,24 @@ export function Header() {
           </ul>
 
           <div
-            className={`flex flex-col gap-5 transition-all duration-500 ease-out ${
+            className={`mt-10 flex flex-col gap-5 pb-2 transition-all duration-500 ease-out ${
               open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
             }`}
             style={{ transitionDelay: open ? `${120 + mobileLinks.length * 55}ms` : '0ms' }}
           >
             <LanguageSwitcher />
             <a
-              href="mailto:info@grosjeanvins.it"
+              href="mailto:hello@maisonaltura.demo"
               onClick={() => setOpen(false)}
               className="font-body text-[0.78rem] tracking-[0.14em] uppercase text-ink-2"
             >
-              info@grosjeanvins.it
+              hello@maisonaltura.demo
             </a>
             <a
-              href="tel:+390165775791"
+              href="tel:+390000000000"
               className="font-body text-[0.78rem] tracking-[0.14em] uppercase text-ink-2"
             >
-              +39 0165 77 57 91
+              +39 000 000 0000
             </a>
             <p className="mt-2 font-body text-[0.78rem] tracking-[0.14em] uppercase text-ink-2">
               {t('footer.tagline')}

@@ -62,7 +62,7 @@ const COLOR_LABELS = {
   rosati: 'Rosati',
 }
 
-const res = await fetch('https://grosjeanvins.it/wp-json/wc/store/v1/products?per_page=100')
+const res = await fetch('https://maisonaltura.demo/wp-json/wc/store/v1/products?per_page=100')
 if (!res.ok) throw new Error(`HTTP ${res.status}`)
 const products = await res.json()
 

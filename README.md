@@ -1,24 +1,12 @@
+# Maison Altura — demo cantina neutra
 
-![Hero Section](preview.png)
+Clone stilistico del progetto Grosjean, **senza riferimenti al brand originale**.
 
-# Grosjean Vins — demo (React + Vite)
-
-Landing marketing premium per [grosjeanvins.it](https://grosjeanvins.it/).
-
-Craft reference di livello: Taylor’s Wines (struttura editoriale / storytelling),
-identità e contenuti: Grosjean (Valle d’Aosta).
-
-## Avvio
+- Brand fittizio: **Maison Altura** (Saint-Martin, Alpi)
+- Foto stock Unsplash (vigneti / bottiglie / cibo)
+- Catalogo e testi demo
 
 ```bash
 npm install
 npm run dev
 ```
-
-## Stack
-- React 19 + Vite 8 + TypeScript
-- Tailwind CSS v4
-- Lenis + GSAP ScrollTrigger
-
-## Home v1
-Intro cinematico → Hero brand-first → Motto → Cru Rovettaz → Storia → Vini → Visita

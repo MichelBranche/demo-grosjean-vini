@@ -1,20 +1,21 @@
-import { useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useI18n } from '../i18n/I18nProvider'
 import { Pairings } from './Pairings'
+import { TextCta } from './TextCta'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
-const INTRO_SESSION_KEY = 'grosjean-intro-seen'
+const INTRO_SESSION_KEY = 'altura-intro-seen'
 
 const wines = [
-  { name: 'Chambave Muscat', year: '2025', price: '19 €', img: '/images/bottle-muscat.png' },
-  { name: 'Le Vin de Michel', year: '2024', price: '33 €', img: '/images/bottle-michel.png' },
-  { name: 'Chardonnay', year: '2025', price: '13 €', img: '/images/bottle-chardonnay.png' },
-  { name: 'Clairetz', year: '2022', price: '35 €', img: '/images/bottle-clairetz.png' },
+  { name: 'Muscat des Alpes', year: '2025', price: '19 €', img: '/images/bottle-muscat.png' },
+  { name: 'Cuvée du Fondateur', year: '2024', price: '33 €', img: '/images/bottle-michel.png' },
+  { name: 'Chardonnay Altitude', year: '2025', price: '13 €', img: '/images/bottle-chardonnay.png' },
+  { name: 'Clairet des Cimes', year: '2022', price: '35 €', img: '/images/bottle-clairetz.png' },
 ]
 
 function hasSeenIntro() {
@@ -28,12 +29,63 @@ function hasSeenIntro() {
 export function ScrollStory() {
   const { t } = useI18n()
   const root = useRef<HTMLDivElement>(null)
+  const heroVideoRef = useRef<HTMLVideoElement>(null)
   const [showIntro] = useState(() => !hasSeenIntro())
+  const [heroUnlocked, setHeroUnlocked] = useState(() => hasSeenIntro())
+  const [heroSoundOn, setHeroSoundOn] = useState(false)
   const [reduceMotion] = useState(() =>
     typeof window !== 'undefined'
       ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
       : false,
   )
+  const heroUnlockedRef = useRef(heroUnlocked)
+  heroUnlockedRef.current = heroUnlocked
+
+  const toggleHeroSound = () => {
+    const video = heroVideoRef.current
+    if (!video) return
+    const next = !heroSoundOn
+    video.muted = !next
+    if (next) {
+      video.volume = 1
+      void video.play().catch(() => {})
+    }
+    setHeroSoundOn(next)
+  }
+
+  useEffect(() => {
+    if (reduceMotion || !showIntro || heroUnlocked) return
+    const video = heroVideoRef.current
+    if (!video) return
+    video.pause()
+    try {
+      video.currentTime = 0
+    } catch {
+      /* ignore */
+    }
+  }, [reduceMotion, showIntro, heroUnlocked])
+
+  useEffect(() => {
+    if (reduceMotion) return
+    const video = heroVideoRef.current
+    const hero = root.current?.querySelector<HTMLElement>("[data-chapter='hero']")
+    if (!video || !hero) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry || !heroUnlockedRef.current) return
+        if (entry.isIntersecting && entry.intersectionRatio > 0.15) {
+          void video.play().catch(() => {})
+        } else {
+          video.pause()
+        }
+      },
+      { threshold: [0, 0.15, 0.35] },
+    )
+
+    observer.observe(hero)
+    return () => observer.disconnect()
+  }, [reduceMotion])
 
   useGSAP(
     () => {
@@ -46,6 +98,7 @@ export function ScrollStory() {
       const introRight = el.querySelector<HTMLElement>('[data-intro-right]')
       const introWord = gsap.utils.toArray<HTMLElement>('[data-intro-word]', el)
       const introRule = el.querySelector<HTMLElement>('[data-intro-rule]')
+      const introGo = el.querySelector<HTMLButtonElement>('[data-intro-go]')
       const heroBoot = gsap.utils.toArray<HTMLElement>('[data-hero-boot]', el)
 
       const disposers: Array<() => void> = []
@@ -59,13 +112,21 @@ export function ScrollStory() {
       const skipIntro = () => {
         intro?.remove()
         gsap.set(heroBoot, { clearProps: 'all' })
+        setHeroUnlocked(true)
         armScrollChapters()
         armScroll()
       }
 
       if (reduce || !showIntro) {
         skipIntro()
-      } else if (!intro || !introLeft || !introRight || !introRule || introWord.length < 2) {
+      } else if (
+        !intro ||
+        !introLeft ||
+        !introRight ||
+        !introRule ||
+        !introGo ||
+        introWord.length < 2
+      ) {
         armScrollChapters()
       } else {
         const lenis = window.__lenis
@@ -75,30 +136,32 @@ export function ScrollStory() {
 
         gsap.set(introWord, { autoAlpha: 0, y: 18 })
         gsap.set(introRule, { scaleY: 0 })
+        gsap.set(introGo, { autoAlpha: 0, y: 14 })
         gsap.set(heroBoot, { autoAlpha: 0, y: 28 })
 
-        const boot = gsap.timeline({
+        const finishIntro = () => {
+          try {
+            sessionStorage.setItem(INTRO_SESSION_KEY, '1')
+          } catch {
+            /* ignore */
+          }
+          document.documentElement.style.overflow = ''
+          document.body.style.overflow = ''
+          lenis?.scrollTo(0, { immediate: true })
+          lenis?.start()
+          intro.remove()
+          armScrollChapters()
+          armScroll()
+        }
+
+        const openCurtain = gsap.timeline({
+          paused: true,
           defaults: { ease: 'power3.out' },
-          onComplete: () => {
-            try {
-              sessionStorage.setItem(INTRO_SESSION_KEY, '1')
-            } catch {
-              /* ignore */
-            }
-            document.documentElement.style.overflow = ''
-            document.body.style.overflow = ''
-            lenis?.scrollTo(0, { immediate: true })
-            lenis?.start()
-            intro.remove()
-            armScrollChapters()
-            armScroll()
-          },
+          onComplete: finishIntro,
         })
 
-        boot
-          .to(introWord, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power4.out' }, 0.2)
-          .to(introRule, { scaleY: 1, duration: 0.55, ease: 'power2.inOut' }, 0.85)
-          .to({}, { duration: 0.45 })
+        openCurtain
+          .to(introGo, { autoAlpha: 0, y: -8, duration: 0.35, ease: 'power2.in' }, 0)
           .to(
             introLeft,
             { xPercent: -100, duration: 1.25, ease: 'power4.inOut' },
@@ -119,6 +182,39 @@ export function ScrollStory() {
             { autoAlpha: 1, y: 0, duration: 0.95, ease: 'power3.out' },
             'open+=0.45',
           )
+
+        const revealMark = gsap.timeline({ defaults: { ease: 'power3.out' } })
+        revealMark
+          .to(introWord, { autoAlpha: 1, y: 0, duration: 0.95, ease: 'power4.out' }, 0.2)
+          .to(introRule, { scaleY: 1, duration: 0.55, ease: 'power2.inOut' }, 0.85)
+          .to(introGo, { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power3.out' }, 1.15)
+
+        const startHeroMedia = () => {
+          const video = heroVideoRef.current
+          setHeroUnlocked(true)
+          setHeroSoundOn(true)
+          if (!video) return
+          video.muted = false
+          video.volume = 1
+          void video.play().catch(() => {
+            video.muted = true
+            setHeroSoundOn(false)
+            void video.play().catch(() => {})
+          })
+        }
+
+        const onProceed = () => {
+          introGo.disabled = true
+          startHeroMedia()
+          openCurtain.play(0)
+        }
+
+        introGo.addEventListener('click', onProceed)
+        disposers.push(() => introGo.removeEventListener('click', onProceed))
+        disposers.push(() => {
+          revealMark.kill()
+          openCurtain.kill()
+        })
       }
 
       function armHeroToViniEscort() {
@@ -130,9 +226,11 @@ export function ScrollStory() {
 
         let locking = false
         let touchY = 0
+        let unlockTimer = 0
 
-        // Soft Lenis-like easing (expo out, a touch slower than default)
-        const softEase = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -11 * t))
+        // Ease-out quart — long decelerate, no snap at the end
+        const softEase = (t: number) => 1 - Math.pow(1 - t, 4)
+        const escortDuration = 2.55
 
         const zone = () => {
           const viniTop = vini.getBoundingClientRect().top
@@ -146,26 +244,37 @@ export function ScrollStory() {
           }
         }
 
+        const unlockEscort = () => {
+          locking = false
+          if (unlockTimer) {
+            window.clearTimeout(unlockTimer)
+            unlockTimer = 0
+          }
+        }
+
         const escortTo = (target: HTMLElement | number) => {
           if (locking) return
           locking = true
           const lenis = window.__lenis
-          // Release wheel/touch soon so scroll feels alive again mid-ease
-          const releaseMs = 520
-          window.setTimeout(() => {
-            locking = false
-          }, releaseMs)
+
+          if (unlockTimer) window.clearTimeout(unlockTimer)
+          // Fallback unlock slightly after the tween (in case onComplete misses)
+          unlockTimer = window.setTimeout(unlockEscort, escortDuration * 1000 + 120)
 
           if (lenis) {
             lenis.scrollTo(target, {
               offset: 0,
-              duration: 1.75,
+              duration: escortDuration,
               easing: softEase,
+              lock: true,
+              onComplete: unlockEscort,
             })
           } else if (typeof target === 'number') {
             window.scrollTo({ top: target, behavior: 'smooth' })
+            unlockTimer = window.setTimeout(unlockEscort, 900)
           } else {
             target.scrollIntoView({ behavior: 'smooth' })
+            unlockTimer = window.setTimeout(unlockEscort, 900)
           }
         }
 
@@ -177,14 +286,14 @@ export function ScrollStory() {
           }
           const { onHero, approachingHero } = zone()
 
-          if (e.deltaY > 12 && onHero) {
+          if (e.deltaY > 18 && onHero) {
             e.preventDefault()
             e.stopImmediatePropagation()
             escortTo(vini)
             return
           }
 
-          if (e.deltaY < -12 && approachingHero) {
+          if (e.deltaY < -18 && approachingHero) {
             e.preventDefault()
             e.stopImmediatePropagation()
             escortTo(hero)
@@ -204,12 +313,12 @@ export function ScrollStory() {
           const dy = touchY - y
           const { onHero, approachingHero } = zone()
 
-          if (dy > 30 && onHero) {
+          if (dy > 36 && onHero) {
             e.preventDefault()
             escortTo(vini)
             return
           }
-          if (dy < -30 && approachingHero) {
+          if (dy < -36 && approachingHero) {
             e.preventDefault()
             escortTo(hero)
           }
@@ -220,6 +329,7 @@ export function ScrollStory() {
         window.addEventListener('touchmove', onTouchMove, { passive: false, capture: true })
 
         disposers.push(() => {
+          if (unlockTimer) window.clearTimeout(unlockTimer)
           window.removeEventListener('wheel', onWheel, true)
           window.removeEventListener('touchstart', onTouchStart, true)
           window.removeEventListener('touchmove', onTouchMove, true)
@@ -401,7 +511,13 @@ export function ScrollStory() {
   return (
     <div ref={root}>
       {showIntro && (
-        <div data-intro className="fixed inset-0 z-[100] overflow-hidden" aria-hidden>
+        <div
+          data-intro
+          className="fixed inset-0 z-[100] overflow-hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('intro.aria')}
+        >
           {/* Left curtain — holds left half of the wordmark */}
           <div
             data-intro-left
@@ -412,7 +528,7 @@ export function ScrollStory() {
                 data-intro-word
                 className="whitespace-nowrap font-body text-[clamp(2.2rem,11vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.06em] text-ink"
               >
-                Grosjean
+                Altura
                 <span className="align-super text-[0.45em] tracking-normal">®</span>
               </p>
             </div>
@@ -428,7 +544,7 @@ export function ScrollStory() {
                 data-intro-word
                 className="whitespace-nowrap font-body text-[clamp(2.2rem,11vw,6.5rem)] font-semibold uppercase leading-none tracking-[0.06em] text-ink"
               >
-                Grosjean
+                Altura
                 <span className="align-super text-[0.45em] tracking-normal">®</span>
               </p>
             </div>
@@ -437,6 +553,16 @@ export function ScrollStory() {
           {/* Center seam that marks the split */}
           <div className="pointer-events-none absolute left-1/2 top-[38%] z-20 h-[24%] -translate-x-1/2">
             <div data-intro-rule className="h-full w-px origin-center bg-gold/70" />
+          </div>
+
+          <div className="absolute left-1/2 top-[calc(50%+clamp(2.6rem,7vw,4.25rem))] z-30 -translate-x-1/2">
+            <button
+              type="button"
+              data-intro-go
+              className="font-body text-[0.72rem] font-semibold tracking-[0.16em] uppercase text-ink underline decoration-ink/35 underline-offset-[7px] opacity-0 transition-opacity hover:opacity-55"
+            >
+              {t('intro.enter')}
+            </button>
           </div>
         </div>
       )}
@@ -452,9 +578,10 @@ export function ScrollStory() {
               />
             ) : (
               <video
+                ref={heroVideoRef}
                 className="h-full w-full object-cover object-center"
-                autoPlay
-                muted
+                autoPlay={heroUnlocked && !showIntro}
+                muted={!heroSoundOn}
                 loop
                 playsInline
                 preload="auto"
@@ -477,7 +604,7 @@ export function ScrollStory() {
 
             <div data-brand className="mx-auto flex w-full max-w-[36rem] flex-col items-center text-center">
               <h1 className="font-body text-[clamp(2.85rem,14vw,9rem)] font-semibold uppercase leading-[0.86] tracking-[0.02em]">
-                Grosjean
+                Altura
                 <span className="align-super text-[0.45em] tracking-normal">®</span>
               </h1>
 
@@ -490,21 +617,64 @@ export function ScrollStory() {
               </p>
 
               <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 md:mt-6 md:gap-x-8">
-                <a
+                <TextCta
                   href="#vini"
                   className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-paper underline decoration-paper/35 underline-offset-[6px] transition-opacity hover:opacity-70 md:text-[0.78rem]"
                 >
                   {t('hero.ctaCollection')}
-                </a>
-                <a
+                </TextCta>
+                <TextCta
                   href="#visita"
                   className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-paper/80 transition-opacity hover:opacity-100 md:text-[0.78rem]"
                 >
                   {t('hero.ctaVisit')}
-                </a>
+                </TextCta>
               </div>
             </div>
           </div>
+
+          {!reduceMotion && (
+            <button
+              type="button"
+              onClick={toggleHeroSound}
+              aria-pressed={heroSoundOn}
+              aria-label={heroSoundOn ? t('hero.mute') : t('hero.unmute')}
+              title={heroSoundOn ? t('hero.mute') : t('hero.unmute')}
+              className="absolute bottom-[max(1rem,env(safe-area-inset-bottom))] left-5 z-20 flex h-9 w-9 items-center justify-center text-paper/55 transition-opacity duration-300 hover:opacity-100 sm:left-6 md:bottom-8 md:left-10 lg:left-14"
+            >
+              {heroSoundOn ? (
+                <svg viewBox="0 0 24 24" className="h-[1.05rem] w-[1.05rem]" fill="none" aria-hidden>
+                  <path
+                    d="M4 10v4h3.2L12 18.5V5.5L7.2 10H4z"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M15.2 9.2a4.2 4.2 0 0 1 0 5.6M17.8 6.8a7.5 7.5 0 0 1 0 10.4"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="h-[1.05rem] w-[1.05rem]" fill="none" aria-hidden>
+                  <path
+                    d="M4 10v4h3.2L12 18.5V5.5L7.2 10H4z"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M16.5 9.5l4 4m0-4l-4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              )}
+            </button>
+          )}
         </div>
       </section>
 
@@ -517,12 +687,12 @@ export function ScrollStory() {
             <p className="font-body text-sm text-ink-2 md:text-[0.95rem]">
               {t('vini.sub')}
             </p>
-            <Link
+            <TextCta
               to="/catalogo"
-              className="mt-1 font-body text-sm font-semibold underline decoration-ink/30 underline-offset-4"
+              className="mt-1 font-body text-sm font-semibold underline decoration-ink/30 underline-offset-4 transition-opacity hover:opacity-70"
             >
               {t('vini.cta')}
-            </Link>
+            </TextCta>
           </div>
 
           <div className="grid min-h-[70svh] flex-1 grid-cols-2 md:min-h-0 md:grid-cols-4">
@@ -569,10 +739,10 @@ export function ScrollStory() {
                 className="flex w-full max-w-[52rem] flex-col items-center gap-3 border-t border-line pt-5 text-center sm:flex-row sm:items-center sm:gap-10 sm:pt-6 sm:text-left md:gap-14"
               >
                 <p className="shrink-0 font-body text-[clamp(2.6rem,12vw,5.5rem)] font-semibold leading-none tracking-tight sm:w-[7.5rem] sm:text-right md:w-[9.5rem]">
-                  1968
+                  1972
                 </p>
                 <p className="max-w-md font-body text-[0.98rem] leading-relaxed text-ink-2 md:max-w-lg md:text-[1.05rem]">
-                  {t('anni.1968')}
+                  {t('anni.1972')}
                 </p>
               </article>
 
@@ -581,10 +751,10 @@ export function ScrollStory() {
                 className="flex w-full max-w-[52rem] flex-col items-center gap-3 border-t border-line pt-5 text-center sm:flex-row sm:items-center sm:gap-10 sm:pt-6 sm:text-left md:gap-14"
               >
                 <p className="shrink-0 font-body text-[clamp(2.6rem,12vw,5.5rem)] font-semibold leading-none tracking-tight sm:w-[7.5rem] sm:text-right md:w-[9.5rem]">
-                  2011
+                  2015
                 </p>
                 <p className="max-w-md font-body text-[0.98rem] leading-relaxed text-ink-2 md:max-w-lg md:text-[1.05rem]">
-                  {t('anni.2011')}
+                  {t('anni.2015')}
                 </p>
               </article>
 
@@ -629,12 +799,12 @@ export function ScrollStory() {
           <p className="mt-5 max-w-md font-body text-[0.95rem] leading-relaxed text-paper/75 md:text-[1rem]">
             {t('esperienze.body')}
           </p>
-          <a
+          <TextCta
             href="#visita"
-            className="mt-8 inline-block font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-paper underline decoration-paper/35 underline-offset-[6px] transition-opacity hover:opacity-70 md:text-[0.78rem]"
+            className="mt-8 font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-paper underline decoration-paper/35 underline-offset-[6px] transition-opacity hover:opacity-70 md:text-[0.78rem]"
           >
             {t('esperienze.cta')}
-          </a>
+          </TextCta>
         </div>
       </section>
 
@@ -654,22 +824,18 @@ export function ScrollStory() {
               {t('visita.quote')}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-10 md:gap-x-8">
-              <a
-                href="https://grosjeanvins.it/degustazione/"
-                target="_blank"
-                rel="noreferrer"
+              <TextCta
+                href="/#visita"
                 className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase underline decoration-ink/30 underline-offset-[6px] transition-opacity hover:opacity-60 md:text-[0.78rem]"
               >
                 {t('visita.ctaBook')}
-              </a>
-              <a
-                href="https://grosjeanvins.it/"
-                target="_blank"
-                rel="noreferrer"
+              </TextCta>
+              <TextCta
+                href="/#visita"
                 className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-ink-2 transition-opacity hover:opacity-100 md:text-[0.78rem]"
               >
                 {t('visita.ctaMore')}
-              </a>
+              </TextCta>
             </div>
           </div>
 
@@ -703,18 +869,18 @@ export function ScrollStory() {
               {t('visione.body2')}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-10 md:gap-x-8">
-              <a
+              <TextCta
                 href="#anni"
                 className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase underline decoration-ink/30 underline-offset-[6px] transition-opacity hover:opacity-60 md:text-[0.78rem]"
               >
                 {t('visione.ctaStory')}
-              </a>
-              <a
+              </TextCta>
+              <TextCta
                 href="#visita"
                 className="font-body text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-ink-2 transition-opacity hover:opacity-100 md:text-[0.78rem]"
               >
                 {t('visione.ctaVisit')}
-              </a>
+              </TextCta>
             </div>
           </div>
 
@@ -766,16 +932,15 @@ export function ScrollStory() {
           <p className="mt-5 font-body text-[0.98rem] leading-relaxed text-ink-2">
             {t('degustazione.body2')}
           </p>
-          <a
-            href="https://grosjeanvins.it/degustazione/"
-            target="_blank"
-            rel="noreferrer"
+          <TextCta
+            href="/#visita"
             className="mt-10 font-body text-[0.78rem] font-semibold tracking-[0.12em] uppercase underline decoration-ink/30 underline-offset-[6px] transition-opacity hover:opacity-60"
           >
             {t('degustazione.cta')}
-          </a>
+          </TextCta>
         </div>
       </section>
     </div>
   )
 }
+

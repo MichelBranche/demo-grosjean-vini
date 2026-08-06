@@ -62,7 +62,7 @@ const entries = Object.entries(scraped).map(([slug, data]) => {
   ]
 })
 
-const file = `/* Auto-generated from grosjeanvins.it product pages — edit carefully */
+const file = `/* Auto-generated from maisonaltura.demo product pages — edit carefully */
 export type ProductTasting = {
   color?: string
   nose?: string

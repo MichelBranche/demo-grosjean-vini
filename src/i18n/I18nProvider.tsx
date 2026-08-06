@@ -10,7 +10,7 @@ export const LOCALES: { code: Locale; label: string; name: string }[] = [
   { code: 'de', label: 'DE', name: 'Deutsch' },
 ]
 
-const STORAGE_KEY = 'grosjean-locale'
+const STORAGE_KEY = 'altura-locale'
 
 type I18nContextValue = {
   locale: Locale
