@@ -57,6 +57,28 @@ export const catalogCategories: CatalogCategory[] = [
   }
 ]
 
+export function getWineBySlug(slug: string): CatalogWine | undefined {
+  return catalogWines.find((w) => w.slug === slug)
+}
+
+export function getRelatedWines(wine: CatalogWine, limit = 4): CatalogWine[] {
+  const same = catalogWines.filter(
+    (w) => w.id !== wine.id && w.categories.includes(wine.category),
+  )
+  if (same.length >= limit) return same.slice(0, limit)
+  const extra = catalogWines.filter(
+    (w) => w.id !== wine.id && !same.some((s) => s.id === w.id),
+  )
+  return [...same, ...extra].slice(0, limit)
+}
+
+export function wineFormatKey(wine: CatalogWine): 'beer' | 'magnum' | 'box' | 'bottle' {
+  if (wine.categories.includes('birra')) return 'beer'
+  if (wine.categories.includes('magnum')) return 'magnum'
+  if (wine.categories.includes('wine-box')) return 'box'
+  return 'bottle'
+}
+
 export const catalogWines: CatalogWine[] = [
   {
     "id": 60733,

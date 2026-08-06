@@ -356,26 +356,34 @@ export function ScrollStory() {
         }
 
         if (!reduce) {
-          const degustSection = root.current?.querySelector<HTMLElement>('#degustazione')
-          const degustImg = degustSection?.querySelector<HTMLElement>('[data-degust-img]')
-          if (degustSection && degustImg) {
+          const parallaxShots = [
+            { id: '#visita', sel: '[data-visita-img]', from: -10, to: 10, scrub: 0.65 },
+            { id: '#visione', sel: '[data-visione-img]', from: -12, to: 12, scrub: 0.7 },
+            { id: '#degustazione', sel: '[data-degust-img]', from: -12, to: 12, scrub: 0.8 },
+          ] as const
+
+          parallaxShots.forEach(({ id, sel, from, to, scrub }) => {
+            const section = root.current?.querySelector<HTMLElement>(id)
+            const img = section?.querySelector<HTMLElement>(sel)
+            if (!section || !img) return
+
             gsap.fromTo(
-              degustImg,
-              { yPercent: -12 },
+              img,
+              { yPercent: from, force3D: true },
               {
-                yPercent: 12,
+                yPercent: to,
                 ease: 'none',
                 force3D: true,
                 scrollTrigger: {
-                  trigger: degustSection,
+                  trigger: section,
                   start: 'top bottom',
                   end: 'bottom top',
-                  scrub: 0.8,
+                  scrub,
                   invalidateOnRefresh: true,
                 },
               },
             )
-          }
+          })
 
           ScrollTrigger.refresh()
         }
@@ -666,11 +674,15 @@ export function ScrollStory() {
           </div>
 
           <div className="order-1 flex items-center justify-center px-4 pb-2 pt-10 sm:px-5 md:px-8 md:py-14 lg:order-2 lg:py-16 lg:pr-10">
-            <img
-              src="/images/picnic.jpg"
-              alt={t('visita.alt')}
-              className="h-auto w-full max-w-[520px] object-contain lg:max-h-[min(85vh,780px)] lg:w-auto"
-            />
+            <div data-visita-frame className="relative w-full max-w-[520px] overflow-hidden">
+              <img
+                data-visita-img
+                src="/images/picnic.jpg"
+                alt={t('visita.alt')}
+                className="h-auto w-full scale-[1.14] object-contain will-change-transform lg:max-h-[min(85vh,780px)] lg:w-auto"
+                decoding="async"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -707,11 +719,15 @@ export function ScrollStory() {
           </div>
 
           <div className="order-1 flex items-center justify-center px-4 pb-2 pt-10 sm:px-5 md:px-8 md:py-14 lg:order-2 lg:py-16 lg:pr-10">
-            <img
-              src="/images/visione-uve.png"
-              alt={t('visione.alt')}
-              className="h-auto w-full max-w-[520px] object-contain lg:max-h-[min(85vh,780px)] lg:w-auto"
-            />
+            <div data-visione-frame className="relative w-full max-w-[520px] overflow-hidden">
+              <img
+                data-visione-img
+                src="/images/visione-uve.png"
+                alt={t('visione.alt')}
+                className="h-auto w-full scale-[1.14] object-contain will-change-transform lg:max-h-[min(85vh,780px)] lg:w-auto"
+                decoding="async"
+              />
+            </div>
           </div>
         </div>
       </section>

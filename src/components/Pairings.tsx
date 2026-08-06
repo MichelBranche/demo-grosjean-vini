@@ -266,8 +266,8 @@ export function Pairings() {
   )
 
   return (
-    <section ref={sectionRef} id="abbinamenti" className="bg-paper text-ink">
-      <div className="mx-auto flex max-w-[640px] flex-col items-center gap-4 px-5 pb-10 pt-20 text-center sm:px-6 md:gap-5 md:pb-12 md:pt-32">
+    <section ref={sectionRef} id="abbinamenti" className="bg-paper pb-28 text-ink md:pb-44">
+      <div className="mx-auto flex max-w-[640px] flex-col items-center gap-4 px-5 pb-10 pt-20 text-center sm:px-6 md:gap-5 md:pb-14 md:pt-32">
         <h2 className="font-body text-[clamp(1.65rem,6vw,2.8rem)] font-semibold tracking-tight">
           {t('pairings.heading')}
         </h2>
@@ -295,14 +295,14 @@ export function Pairings() {
       </div>
 
       <div id="pairings-panel" ref={panelRef} className="relative overflow-hidden" aria-hidden={!open}>
-        <div ref={innerRef} className="flex flex-col gap-24 pb-20 md:gap-44 md:pb-40">
+        <div ref={innerRef} className="flex flex-col gap-28 pb-16 md:gap-52 md:pb-28">
           {recipes.map((r, i) => {
             const flip = i % 2 === 1
             return (
               <article
                 key={`${r.wine}-${r.dish}`}
                 data-pair-article
-                className={`mx-auto grid w-full max-w-[1400px] items-start gap-8 px-5 md:grid-cols-2 md:gap-20 md:px-10 lg:gap-28 ${
+                className={`mx-auto grid w-full max-w-[1480px] items-start gap-10 px-5 md:grid-cols-2 md:gap-24 md:px-10 lg:gap-32 lg:px-14 ${
                   flip ? 'md:[&>div:first-child]:order-2' : ''
                 }`}
               >
@@ -322,7 +322,7 @@ export function Pairings() {
 
                 <div
                   data-pair-copy
-                  className={`mx-auto max-w-lg pt-1 text-center md:mx-0 md:pt-2 md:text-left ${
+                  className={`mx-auto w-full max-w-xl pt-1 text-center md:mx-0 md:max-w-2xl md:pt-2 md:text-left ${
                     flip ? 'md:justify-self-end' : ''
                   }`}
                 >

@@ -190,10 +190,8 @@ export function Catalog() {
                 style={{ visibility: 'hidden', opacity: 0 }}
               >
                 <div className="relative w-full">
-                  <a
-                    href={w.permalink}
-                    target="_blank"
-                    rel="noreferrer"
+                  <Link
+                    to={`/catalogo/${w.slug}`}
                     className={
                       isBoxShot
                         ? 'relative block aspect-[4/5] w-full overflow-hidden md:aspect-[3/4]'
@@ -216,7 +214,7 @@ export function Catalog() {
                         —
                       </div>
                     )}
-                  </a>
+                  </Link>
                   <button
                     type="button"
                     onClick={() => addItem(w)}
@@ -250,14 +248,9 @@ export function Catalog() {
                   </button>
                 </div>
                 <h2 className="mt-6 max-w-[18ch] font-body text-[0.92rem] font-semibold leading-snug tracking-tight md:text-[1.05rem]">
-                  <a
-                    href={w.permalink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="transition-opacity hover:opacity-55"
-                  >
+                  <Link to={`/catalogo/${w.slug}`} className="transition-opacity hover:opacity-55">
                     {w.name}
-                  </a>
+                  </Link>
                 </h2>
                 <p className="mt-2 font-body text-[0.88rem] text-ink-2 md:text-[0.95rem]">{w.price}</p>
                 <p className="mt-1 font-body text-[0.65rem] tracking-[0.12em] uppercase text-ink/45">

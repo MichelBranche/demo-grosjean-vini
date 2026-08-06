@@ -27,7 +27,7 @@ const socialLinks = [
 
 function FooterHeading({ children }: { children: string }) {
   return (
-    <h3 className="font-display text-[0.68rem] font-medium tracking-[0.16em] uppercase text-ink">
+    <h3 className="min-h-[2.6rem] font-display text-[0.68rem] font-medium leading-[1.35] tracking-[0.16em] uppercase text-ink">
       {children}
     </h3>
   )
@@ -36,7 +36,7 @@ function FooterHeading({ children }: { children: string }) {
 function FooterLink({ href, children }: { href: string; children: string }) {
   const external = href.startsWith('http') || href.startsWith('mailto:')
   const className =
-    'block font-body text-[0.95rem] leading-[1.7] text-ink transition-opacity hover:opacity-55'
+    'block py-0.5 font-body text-[0.95rem] leading-[1.65] text-ink transition-opacity hover:opacity-55'
 
   if (external) {
     return (
@@ -101,9 +101,9 @@ function Accordion({
   )
 }
 
-function SocialRow() {
+function SocialRow({ className = '' }: { className?: string }) {
   return (
-    <ul className="flex items-center justify-center gap-4">
+    <ul className={`flex items-center gap-4 ${className || 'justify-center'}`}>
       {socialLinks.map((s) => (
         <li key={s.label}>
           <a
@@ -242,8 +242,11 @@ export function Footer() {
             </Accordion>
           </div>
 
-          <p className="mt-10 text-center font-body text-[clamp(3.2rem,18vw,5.5rem)] font-semibold uppercase leading-none tracking-[0.06em]">
-            Grosjean<span className="align-super text-[0.45em] tracking-normal">®</span>
+          <p className="mt-10 px-2 text-center font-body text-[clamp(3rem,15vw,5.5rem)] font-semibold uppercase leading-[0.92] tracking-[0.06em]">
+            Grosjean
+            <span className="relative -top-[0.55em] ml-[0.02em] inline-block text-[0.38em] leading-none tracking-normal">
+              ®
+            </span>
           </p>
 
           <div className="mt-8 flex flex-col items-center gap-6 border-t border-line pt-8">
@@ -293,11 +296,11 @@ export function Footer() {
 
       {/* ——— Desktop ——— */}
       <div className="hidden lg:block">
-        <div className="mx-auto max-w-[1400px] px-10 pt-24">
-          <div className="grid grid-cols-4 gap-x-12">
+        <div className="mx-auto max-w-[1400px] px-10 pt-24 xl:px-14">
+          <div className="grid grid-cols-4 items-start gap-x-10 xl:gap-x-14">
             <div className="min-w-0">
               <FooterHeading>{t('footer.heritageTitle')}</FooterHeading>
-              <p className="mt-5 max-w-[30ch] font-body text-[0.95rem] leading-[1.6] text-ink">
+              <p className="mt-5 max-w-[28ch] font-body text-[0.95rem] leading-[1.65] text-ink">
                 {t('footer.heritageBody')}
               </p>
             </div>
@@ -326,75 +329,78 @@ export function Footer() {
 
             <div className="min-w-0">
               <FooterHeading>{t('footer.contactTitle')}</FooterHeading>
-              <div className="mt-5 space-y-1 font-body text-[0.95rem] leading-[1.7]">
-                <p>
-                  <span className="text-ink-2">{t('footer.phoneLabel')} </span>
-                  <a href="tel:+390165775791" className="transition-opacity hover:opacity-55">
+              <ul className="mt-5">
+                <li>
+                  <a
+                    href="tel:+390165775791"
+                    className="block py-0.5 font-body text-[0.95rem] leading-[1.65] text-ink transition-opacity hover:opacity-55"
+                  >
                     +39 0165 77 57 91
                   </a>
-                </p>
-                <p>
+                </li>
+                <li>
                   <a
                     href="mailto:info@grosjeanvins.it"
-                    className="underline decoration-ink/25 underline-offset-4 transition-opacity hover:opacity-55"
+                    className="block py-0.5 font-body text-[0.95rem] leading-[1.65] text-ink transition-opacity hover:opacity-55"
                   >
                     {t('footer.writeUs')}
                   </a>
-                </p>
+                </li>
+              </ul>
+              <div className="mt-8">
+                <SocialRow className="justify-start" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mx-auto max-w-[1400px] overflow-hidden px-6 pb-16 pt-20">
-          <p className="text-center font-body text-[clamp(4rem,17.5vw,14.5rem)] font-semibold uppercase leading-none tracking-[0.06em] text-ink">
-            Grosjean<span className="align-super text-[0.45em] tracking-normal">®</span>
+        <div className="mx-auto max-w-[1400px] overflow-x-clip px-10 pb-16 pt-20 xl:px-14">
+          <p className="text-center font-body text-[clamp(3.5rem,15vw,14.5rem)] font-semibold uppercase leading-[0.92] tracking-[0.06em] text-ink">
+            Grosjean
+            <span className="relative -top-[0.55em] ml-[0.02em] inline-block text-[0.38em] leading-none tracking-normal">
+              ®
+            </span>
           </p>
         </div>
 
         <div className="border-t border-line/60">
-          <div className="mx-auto flex max-w-[1400px] flex-col gap-8 px-10 py-10">
-            <p className="text-center font-body text-[0.68rem] leading-relaxed text-ink-2">
+          <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-8 px-10 py-9 xl:px-14">
+            <DrinkMark className="h-8" />
+
+            <p className="max-w-[36rem] text-center font-body text-[0.68rem] leading-relaxed text-ink-2">
               Società Agricola Grosjean Vins s.s. · P.IVA 00536390073 · Fraz. Ollignan 2, 11020 Quart
               (AO)
             </p>
 
-            <div className="flex items-center justify-between gap-8">
-              <DrinkMark className="h-8" />
-
-              <div className="flex items-center gap-6 font-body text-[0.82rem]">
-                <a
-                  href="https://grosjeanvins.it/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="transition-opacity hover:opacity-55"
-                >
-                  {t('footer.terms')}
-                </a>
-                <a
-                  href="https://grosjeanvins.it/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="transition-opacity hover:opacity-55"
-                >
-                  {t('footer.privacy')}
-                </a>
-              </div>
-            </div>
-
-            <SocialRow />
-
-            <p className="text-center font-body text-[0.75rem] text-ink-2">
-              {t('footer.designBy')}{' '}
+            <div className="flex shrink-0 items-center gap-6 font-body text-[0.82rem]">
               <a
-                href="https://michelbranche.it"
+                href="https://grosjeanvins.it/"
                 target="_blank"
                 rel="noreferrer"
-                className="underline decoration-ink/40 underline-offset-4 transition-opacity hover:opacity-55"
+                className="transition-opacity hover:opacity-55"
               >
-                Michel Branche
+                {t('footer.terms')}
               </a>
-            </p>
+              <a
+                href="https://grosjeanvins.it/"
+                target="_blank"
+                rel="noreferrer"
+                className="transition-opacity hover:opacity-55"
+              >
+                {t('footer.privacy')}
+              </a>
+              <span className="text-ink-2">
+                {t('footer.designBy')}{' '}
+                <a
+                  href="https://michelbranche.it"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline decoration-ink/40 underline-offset-4 transition-opacity hover:opacity-55"
+                >
+                  Michel Branche
+                </a>
+              </span>
+            </div>
           </div>
         </div>
       </div>

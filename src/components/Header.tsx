@@ -271,8 +271,8 @@ export function Header() {
         open || searchOpen ? 'bg-paper' : 'border-b border-ink/15 bg-paper'
       } ${!open && !searchOpen && scrolled ? 'shadow-[0_1px_0_rgba(26,31,36,0.06)]' : ''} transition-[box-shadow,background-color] duration-300`}
     >
-      <div className="relative z-[60] grid h-[4.25rem] w-full grid-cols-[1fr_auto_1fr] items-center px-4 md:h-[4.75rem] md:px-8 lg:px-10 xl:px-14">
-        <nav className="hidden items-center gap-7 lg:flex xl:gap-9" aria-label={t('nav.ariaSections')}>
+      <div className="relative z-[60] flex h-[4.25rem] w-full items-center justify-between px-4 md:h-[4.75rem] md:px-8 lg:px-10 xl:px-14">
+        <nav className="relative z-[70] hidden items-center gap-7 lg:flex xl:gap-9" aria-label={t('nav.ariaSections')}>
           {leftLinks.map((l) => (
             <Link
               key={l.href}
@@ -319,13 +319,15 @@ export function Header() {
             setOpen(false)
             setSearchOpen(false)
           }}
-          className="nav-brand relative z-[70] justify-self-center font-body text-[1.25rem] font-semibold tracking-[0.05em] uppercase sm:text-[1.4rem] md:text-[1.6rem]"
+          className="nav-brand absolute left-1/2 top-1/2 z-[70] -translate-x-1/2 -translate-y-1/2 font-body text-[1.25rem] font-semibold tracking-[0.05em] uppercase sm:text-[1.4rem] md:text-[1.6rem]"
         >
           Grosjean
-          <span className="align-super text-[0.45em] tracking-normal">®</span>
+          <span className="relative -top-[0.55em] ml-[0.02em] inline-block text-[0.38em] leading-none tracking-normal">
+            ®
+          </span>
         </Link>
 
-        <div className="relative z-[70] flex items-center justify-end gap-3.5 sm:gap-5 md:gap-6">
+        <div className="relative z-[70] flex items-center justify-end gap-1 sm:gap-2 md:gap-2.5">
           <LanguageSwitcher className="hidden sm:flex" />
 
           <button
@@ -341,18 +343,18 @@ export function Header() {
             aria-expanded={searchOpen}
           >
             {searchOpen ? (
-              <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem]" fill="none" aria-hidden>
-                <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" />
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             ) : (
-              <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem]" fill="none" aria-hidden>
-                <circle cx="11" cy="11" r="6.25" stroke="currentColor" strokeWidth="1.35" />
-                <path d="M16 16l4.5 4.5" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" />
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+                <circle cx="11" cy="11" r="6.25" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M16 16l4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             )}
           </button>
 
-          <div className="relative hidden sm:block" ref={demoTipRef}>
+          <div className="relative hidden sm:flex sm:items-center" ref={demoTipRef}>
             <button
               type="button"
               data-demo-tip-toggle
@@ -361,12 +363,12 @@ export function Header() {
               aria-label={t('contacts.aria')}
               aria-expanded={demoTip}
             >
-              <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem]" fill="none" aria-hidden>
-                <circle cx="12" cy="8" r="3.25" stroke="currentColor" strokeWidth="1.35" />
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+                <circle cx="12" cy="8" r="3.25" stroke="currentColor" strokeWidth="1.5" />
                 <path
                   d="M5.5 19.25c1.4-3.1 3.7-4.5 6.5-4.5s5.1 1.4 6.5 4.5"
                   stroke="currentColor"
-                  strokeWidth="1.35"
+                  strokeWidth="1.5"
                   strokeLinecap="round"
                 />
               </svg>
@@ -401,17 +403,17 @@ export function Header() {
               setCartOpen(true)
             }}
           >
-            <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem]" fill="none" aria-hidden>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden>
               <path
                 d="M4.5 6.5h15l-1.2 11.2a1.8 1.8 0 0 1-1.8 1.6H7.5a1.8 1.8 0 0 1-1.8-1.6L4.5 6.5z"
                 stroke="currentColor"
-                strokeWidth="1.35"
+                strokeWidth="1.5"
                 strokeLinejoin="round"
               />
               <path
                 d="M8.5 6.5V5.2a3.5 3.5 0 0 1 7 0v1.3"
                 stroke="currentColor"
-                strokeWidth="1.35"
+                strokeWidth="1.5"
                 strokeLinecap="round"
               />
             </svg>
@@ -489,10 +491,8 @@ export function Header() {
                     aimFloat(e.clientX, e.clientY, first)
                   }}
                 >
-                  <a
-                    href={w.permalink}
-                    target="_blank"
-                    rel="noreferrer"
+                  <Link
+                    to={`/catalogo/${w.slug}`}
                     className="flex items-baseline justify-between gap-4 py-3.5 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:translate-x-1 hover:opacity-70 active:scale-[0.99]"
                     onClick={() => {
                       previewActive.current = false
@@ -507,7 +507,7 @@ export function Header() {
                       {w.name}
                     </span>
                     <span className="shrink-0 font-body text-[0.78rem] text-ink-2">{w.price}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
               {query.trim() && results.length === 0 && (

@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { ScrollStory } from './ScrollStory'
 import { Catalog } from '../pages/Catalog'
+import { Product } from '../pages/Product'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -17,6 +18,15 @@ function Home() {
 
 const WINE_FILL =
   'linear-gradient(180deg, #6e2f2d 0%, #8a3d3a 28%, #5c2422 72%, #3d1716 100%)'
+
+function isCatalogFamily(path: string) {
+  return path === '/catalogo' || path.startsWith('/catalogo/')
+}
+
+/** Full wine wipe only between major sections — skip catalog ↔ product chatter */
+function shouldSkipWineWipe(from: string, to: string) {
+  return isCatalogFamily(from) && isCatalogFamily(to)
+}
 
 /** Tall, pour-like surface shapes (viewBox 0 0 2400 160 — double width for seamless drift) */
 const WAVE_A =
@@ -44,6 +54,7 @@ export function PageTransition() {
   const root = useRef<HTMLDivElement>(null)
   const liquidRef = useRef<HTMLDivElement>(null)
   const veilRef = useRef<HTMLDivElement>(null)
+  const softVeilRef = useRef<HTMLDivElement>(null)
   const markRef = useRef<HTMLParagraphElement>(null)
   const surfaceRef = useRef<HTMLDivElement>(null)
   const waveBackRef = useRef<SVGPathElement>(null)
@@ -65,10 +76,12 @@ export function PageTransition() {
     const el = root.current
     const liquid = liquidRef.current
     const veil = veilRef.current
+    const soft = softVeilRef.current
     const mark = markRef.current
     if (el) gsap.set(el, { autoAlpha: 0, pointerEvents: 'none' })
     if (liquid) gsap.set(liquid, { y: '100%' })
     if (veil) gsap.set(veil, { autoAlpha: 0 })
+    if (soft) gsap.set(soft, { autoAlpha: 0 })
     if (mark) gsap.set(mark, { autoAlpha: 0 })
 
     return () => {
@@ -98,12 +111,72 @@ export function PageTransition() {
     if (busy.current) return
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduce) {
-      displayPath.current = location.pathname
-      setDisplayLocation(location)
+    const softNav = shouldSkipWineWipe(displayPath.current, location.pathname)
+
+    const finishSwap = (next: typeof location) => {
+      displayPath.current = next.pathname
+      setDisplayLocation(next)
       window.scrollTo(0, 0)
       window.__lenis?.scrollTo(0, { immediate: true })
       window.dispatchEvent(new CustomEvent('grosjean:page-ready'))
+    }
+
+    if (reduce) {
+      finishSwap(location)
+      return
+    }
+
+    // Catalog ↔ product: quick paper crossfade (~0.5s)
+    if (softNav) {
+      const el = root.current
+      const soft = softVeilRef.current
+      const liquid = liquidRef.current
+      const veil = veilRef.current
+      const mark = markRef.current
+      if (!el || !soft) {
+        finishSwap(location)
+        return
+      }
+
+      busy.current = true
+      const lenis = window.__lenis
+      tween.current?.kill()
+      killWaves()
+
+      gsap.set(el, { autoAlpha: 1, pointerEvents: 'all', backgroundColor: 'transparent' })
+      if (liquid) gsap.set(liquid, { autoAlpha: 0 })
+      if (veil) gsap.set(veil, { autoAlpha: 0 })
+      if (mark) gsap.set(mark, { autoAlpha: 0 })
+      gsap.set(soft, { autoAlpha: 0 })
+
+      lenis?.stop()
+
+      const next = location
+      const tl = gsap.timeline({
+        defaults: { ease: 'power2.inOut' },
+        onComplete: () => {
+          const latest = pending.current
+          if (latest.pathname !== displayPath.current) {
+            // Another soft hop queued — restart soft path via effect won't re-fire;
+            // finish immediately if still catalog family
+            if (shouldSkipWineWipe(displayPath.current, latest.pathname)) {
+              finishSwap(latest)
+            }
+          }
+          busy.current = false
+          gsap.set(el, { autoAlpha: 0, pointerEvents: 'none' })
+          gsap.set(soft, { autoAlpha: 0 })
+          if (liquid) gsap.set(liquid, { autoAlpha: 1, y: '100%' })
+          lenis?.start()
+          window.setTimeout(() => ScrollTrigger.refresh(), 40)
+        },
+      })
+      tween.current = tl
+
+      tl.to(soft, { autoAlpha: 1, duration: 0.22 }, 0)
+        .add(() => finishSwap(next), 0.24)
+        .to(soft, { autoAlpha: 0, duration: 0.28 }, 0.28)
+
       return
     }
 
@@ -111,15 +184,14 @@ export function PageTransition() {
     const liquid = liquidRef.current
     const veil = veilRef.current
     const mark = markRef.current
+    const soft = softVeilRef.current
     const surface = surfaceRef.current
     const waveBack = waveBackRef.current
     const waveMid = waveMidRef.current
     const waveFront = waveFrontRef.current
     const sheen = sheenRef.current
     if (!el || !liquid || !veil) {
-      displayPath.current = location.pathname
-      setDisplayLocation(location)
-      window.dispatchEvent(new CustomEvent('grosjean:page-ready'))
+      finishSwap(location)
       return
     }
 
@@ -133,6 +205,7 @@ export function PageTransition() {
       gsap.set(el, { autoAlpha: 1, pointerEvents: 'all', backgroundColor: '#5c2422' })
       gsap.set(liquid, { y: '100%', force3D: true, autoAlpha: 1 })
       gsap.set(veil, { autoAlpha: 0 })
+      if (soft) gsap.set(soft, { autoAlpha: 0 })
       if (mark) gsap.set(mark, { autoAlpha: 0, scale: 0.96 })
       if (surface) gsap.set(surface, { x: 0, y: 0 })
       if (waveBack) gsap.set(waveBack, { attr: { d: WAVE_A } })
@@ -247,6 +320,14 @@ export function PageTransition() {
             </main>
           }
         />
+        <Route
+          path="/catalogo/:slug"
+          element={
+            <main>
+              <Product />
+            </main>
+          }
+        />
       </Routes>
 
       <div
@@ -304,6 +385,13 @@ export function PageTransition() {
             }}
           />
         </div>
+
+        {/* Soft paper veil — catalog ↔ product */}
+        <div
+          ref={softVeilRef}
+          className="absolute inset-0 bg-paper"
+          style={{ opacity: 0, visibility: 'hidden' }}
+        />
 
         {/* Full-bleed seal — no transforms, oversized so no edge hairline */}
         <div
