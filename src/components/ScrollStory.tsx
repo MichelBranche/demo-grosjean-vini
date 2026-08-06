@@ -48,6 +48,9 @@ export function ScrollStory() {
       const introRule = el.querySelector<HTMLElement>('[data-intro-rule]')
       const heroBoot = gsap.utils.toArray<HTMLElement>('[data-hero-boot]', el)
 
+      const disposers: Array<() => void> = []
+      let heroEscortArmed = false
+
       const armScroll = () => {
         ScrollTrigger.refresh()
         window.setTimeout(() => ScrollTrigger.refresh(), 200)
@@ -62,65 +65,166 @@ export function ScrollStory() {
 
       if (reduce || !showIntro) {
         skipIntro()
-        return
-      }
-
-      if (!intro || !introLeft || !introRight || !introRule || introWord.length < 2) {
+      } else if (!intro || !introLeft || !introRight || !introRule || introWord.length < 2) {
         armScrollChapters()
-        return
+      } else {
+        const lenis = window.__lenis
+        lenis?.stop()
+        document.documentElement.style.overflow = 'hidden'
+        document.body.style.overflow = 'hidden'
+
+        gsap.set(introWord, { autoAlpha: 0, y: 18 })
+        gsap.set(introRule, { scaleY: 0 })
+        gsap.set(heroBoot, { autoAlpha: 0, y: 28 })
+
+        const boot = gsap.timeline({
+          defaults: { ease: 'power3.out' },
+          onComplete: () => {
+            try {
+              sessionStorage.setItem(INTRO_SESSION_KEY, '1')
+            } catch {
+              /* ignore */
+            }
+            document.documentElement.style.overflow = ''
+            document.body.style.overflow = ''
+            lenis?.scrollTo(0, { immediate: true })
+            lenis?.start()
+            intro.remove()
+            armScrollChapters()
+            armScroll()
+          },
+        })
+
+        boot
+          .to(introWord, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power4.out' }, 0.2)
+          .to(introRule, { scaleY: 1, duration: 0.55, ease: 'power2.inOut' }, 0.85)
+          .to({}, { duration: 0.45 })
+          .to(
+            introLeft,
+            { xPercent: -100, duration: 1.25, ease: 'power4.inOut' },
+            'open',
+          )
+          .to(
+            introRight,
+            { xPercent: 100, duration: 1.25, ease: 'power4.inOut' },
+            'open',
+          )
+          .to(
+            introRule,
+            { autoAlpha: 0, duration: 0.35, ease: 'power2.in' },
+            'open',
+          )
+          .to(
+            heroBoot,
+            { autoAlpha: 1, y: 0, duration: 0.95, ease: 'power3.out' },
+            'open+=0.45',
+          )
       }
 
-      const lenis = window.__lenis
-      lenis?.stop()
-      document.documentElement.style.overflow = 'hidden'
-      document.body.style.overflow = 'hidden'
+      function armHeroToViniEscort() {
+        if (reduce || heroEscortArmed) return
+        const vini = root.current?.querySelector<HTMLElement>('#vini')
+        const hero = root.current?.querySelector<HTMLElement>("[data-chapter='hero']")
+        if (!vini || !hero) return
+        heroEscortArmed = true
 
-      gsap.set(introWord, { autoAlpha: 0, y: 18 })
-      gsap.set(introRule, { scaleY: 0 })
-      gsap.set(heroBoot, { autoAlpha: 0, y: 28 })
+        let locking = false
+        let touchY = 0
 
-      const boot = gsap.timeline({
-        defaults: { ease: 'power3.out' },
-        onComplete: () => {
-          try {
-            sessionStorage.setItem(INTRO_SESSION_KEY, '1')
-          } catch {
-            /* ignore */
+        // Soft Lenis-like easing (expo out, a touch slower than default)
+        const softEase = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -11 * t))
+
+        const zone = () => {
+          const viniTop = vini.getBoundingClientRect().top
+          const vh = window.innerHeight
+          return {
+            // Mostly still looking at the hero
+            onHero: viniTop > vh * 0.42,
+            // Crossing back toward the hero from the wines band
+            approachingHero:
+              viniTop < vh * 0.72 && viniTop > -vh * 0.12 && window.scrollY > 24,
           }
-          document.documentElement.style.overflow = ''
-          document.body.style.overflow = ''
-          lenis?.scrollTo(0, { immediate: true })
-          lenis?.start()
-          intro.remove()
-          armScrollChapters()
-          armScroll()
-        },
-      })
+        }
 
-      boot
-        .to(introWord, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power4.out' }, 0.2)
-        .to(introRule, { scaleY: 1, duration: 0.55, ease: 'power2.inOut' }, 0.85)
-        .to({}, { duration: 0.45 })
-        .to(
-          introLeft,
-          { xPercent: -100, duration: 1.25, ease: 'power4.inOut' },
-          'open',
-        )
-        .to(
-          introRight,
-          { xPercent: 100, duration: 1.25, ease: 'power4.inOut' },
-          'open',
-        )
-        .to(
-          introRule,
-          { autoAlpha: 0, duration: 0.35, ease: 'power2.in' },
-          'open',
-        )
-        .to(
-          heroBoot,
-          { autoAlpha: 1, y: 0, duration: 0.95, ease: 'power3.out' },
-          'open+=0.45',
-        )
+        const escortTo = (target: HTMLElement | number) => {
+          if (locking) return
+          locking = true
+          const lenis = window.__lenis
+          // Release wheel/touch soon so scroll feels alive again mid-ease
+          const releaseMs = 520
+          window.setTimeout(() => {
+            locking = false
+          }, releaseMs)
+
+          if (lenis) {
+            lenis.scrollTo(target, {
+              offset: 0,
+              duration: 1.75,
+              easing: softEase,
+            })
+          } else if (typeof target === 'number') {
+            window.scrollTo({ top: target, behavior: 'smooth' })
+          } else {
+            target.scrollIntoView({ behavior: 'smooth' })
+          }
+        }
+
+        const onWheel = (e: WheelEvent) => {
+          if (locking) {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+            return
+          }
+          const { onHero, approachingHero } = zone()
+
+          if (e.deltaY > 12 && onHero) {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+            escortTo(vini)
+            return
+          }
+
+          if (e.deltaY < -12 && approachingHero) {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+            escortTo(hero)
+          }
+        }
+
+        const onTouchStart = (e: TouchEvent) => {
+          touchY = e.touches[0]?.clientY ?? 0
+        }
+
+        const onTouchMove = (e: TouchEvent) => {
+          if (locking) {
+            e.preventDefault()
+            return
+          }
+          const y = e.touches[0]?.clientY ?? 0
+          const dy = touchY - y
+          const { onHero, approachingHero } = zone()
+
+          if (dy > 30 && onHero) {
+            e.preventDefault()
+            escortTo(vini)
+            return
+          }
+          if (dy < -30 && approachingHero) {
+            e.preventDefault()
+            escortTo(hero)
+          }
+        }
+
+        window.addEventListener('wheel', onWheel, { passive: false, capture: true })
+        window.addEventListener('touchstart', onTouchStart, { passive: true, capture: true })
+        window.addEventListener('touchmove', onTouchMove, { passive: false, capture: true })
+
+        disposers.push(() => {
+          window.removeEventListener('wheel', onWheel, true)
+          window.removeEventListener('touchstart', onTouchStart, true)
+          window.removeEventListener('touchmove', onTouchMove, true)
+        })
+      }
 
       function armScrollChapters() {
         const mm = gsap.matchMedia()
@@ -130,19 +234,18 @@ export function ScrollStory() {
           const heroImg = hero?.querySelector<HTMLElement>('[data-media]')
           const heroBrand = hero?.querySelector<HTMLElement>('[data-brand]')
           if (hero && heroImg && heroBrand) {
+            // No pin: first scroll can escort straight to #vini
             gsap
               .timeline({
                 scrollTrigger: {
                   trigger: hero,
                   start: 'top top',
-                  end: '+=48%',
-                  scrub: 0.35,
-                  pin: true,
-                  anticipatePin: 1,
+                  end: 'bottom top',
+                  scrub: 0.4,
                 },
               })
               .fromTo(heroImg, { scale: 1.06 }, { scale: 1, ease: 'none' }, 0)
-              .to(heroBrand, { yPercent: -6, ease: 'none' }, 0)
+              .to(heroBrand, { yPercent: -8, ease: 'none' }, 0)
           }
 
           const years = root.current?.querySelector<HTMLElement>("[data-chapter='anni']")
@@ -253,29 +356,6 @@ export function ScrollStory() {
         }
 
         if (!reduce) {
-          const pairArticles = gsap.utils.toArray<HTMLElement>('[data-pair-article]', root.current)
-          pairArticles.forEach((article) => {
-            const img = article.querySelector<HTMLElement>('[data-pair-img]')
-            if (!img) return
-
-            gsap.fromTo(
-              img,
-              { yPercent: -12 },
-              {
-                yPercent: 12,
-                ease: 'none',
-                force3D: true,
-                scrollTrigger: {
-                  trigger: article,
-                  start: 'top bottom',
-                  end: 'bottom top',
-                  scrub: 0.8,
-                  invalidateOnRefresh: true,
-                },
-              },
-            )
-          })
-
           const degustSection = root.current?.querySelector<HTMLElement>('#degustazione')
           const degustImg = degustSection?.querySelector<HTMLElement>('[data-degust-img]')
           if (degustSection && degustImg) {
@@ -299,9 +379,15 @@ export function ScrollStory() {
 
           ScrollTrigger.refresh()
         }
+
+        armHeroToViniEscort()
+      }
+
+      return () => {
+        disposers.forEach((d) => d())
       }
     },
-    { scope: root },
+    { scope: root, dependencies: [showIntro] },
   )
 
   return (
@@ -466,35 +552,46 @@ export function ScrollStory() {
 
       <section id="anni" data-chapter="anni" className="chapter">
         <div className="bg-paper px-5 py-20 md:relative md:h-[100svh] md:overflow-hidden md:px-10 md:py-0">
-          <div className="mx-auto flex max-w-[1100px] flex-col justify-center gap-10 md:h-full md:gap-12">
+          <div className="mx-auto flex h-full max-w-[1100px] flex-col items-center justify-center gap-10 md:gap-12">
             <p className="font-body text-sm text-ink-2">{t('anni.eyebrow')}</p>
 
-            <article data-anno className="border-t border-line pt-5 md:pt-6">
-              <p className="font-body text-[clamp(2.6rem,14vw,6rem)] font-semibold leading-none tracking-tight">
-                1968
-              </p>
-              <p className="mt-3 max-w-lg font-body text-[0.98rem] leading-relaxed text-ink-2 md:mt-4 md:text-[1.05rem]">
-                {t('anni.1968')}
-              </p>
-            </article>
+            <div className="flex w-full flex-col items-center gap-10 md:gap-12">
+              <article
+                data-anno
+                className="flex w-full max-w-[52rem] flex-col items-center gap-3 border-t border-line pt-5 text-center sm:flex-row sm:items-center sm:gap-10 sm:pt-6 sm:text-left md:gap-14"
+              >
+                <p className="shrink-0 font-body text-[clamp(2.6rem,12vw,5.5rem)] font-semibold leading-none tracking-tight sm:w-[7.5rem] sm:text-right md:w-[9.5rem]">
+                  1968
+                </p>
+                <p className="max-w-md font-body text-[0.98rem] leading-relaxed text-ink-2 md:max-w-lg md:text-[1.05rem]">
+                  {t('anni.1968')}
+                </p>
+              </article>
 
-            <article data-anno className="border-t border-line pt-5 md:pt-6">
-              <p className="font-body text-[clamp(2.6rem,14vw,6rem)] font-semibold leading-none tracking-tight">
-                2011
-              </p>
-              <p className="mt-3 max-w-lg font-body text-[0.98rem] leading-relaxed text-ink-2 md:mt-4 md:text-[1.05rem]">
-                {t('anni.2011')}
-              </p>
-            </article>
+              <article
+                data-anno
+                className="flex w-full max-w-[52rem] flex-col items-center gap-3 border-t border-line pt-5 text-center sm:flex-row sm:items-center sm:gap-10 sm:pt-6 sm:text-left md:gap-14"
+              >
+                <p className="shrink-0 font-body text-[clamp(2.6rem,12vw,5.5rem)] font-semibold leading-none tracking-tight sm:w-[7.5rem] sm:text-right md:w-[9.5rem]">
+                  2011
+                </p>
+                <p className="max-w-md font-body text-[0.98rem] leading-relaxed text-ink-2 md:max-w-lg md:text-[1.05rem]">
+                  {t('anni.2011')}
+                </p>
+              </article>
 
-            <article data-anno className="border-t border-line pt-5 md:pt-6">
-              <p className="font-body text-[clamp(2.6rem,14vw,6rem)] font-semibold leading-none tracking-tight">
-                {t('anni.oggiLabel')}
-              </p>
-              <p className="mt-3 max-w-lg font-body text-[0.98rem] leading-relaxed text-ink-2 md:mt-4 md:text-[1.05rem]">
-                {t('anni.oggi')}
-              </p>
-            </article>
+              <article
+                data-anno
+                className="flex w-full max-w-[52rem] flex-col items-center gap-3 border-t border-line pt-5 text-center sm:flex-row sm:items-center sm:gap-10 sm:pt-6 sm:text-left md:gap-14"
+              >
+                <p className="shrink-0 font-body text-[clamp(2.6rem,12vw,5.5rem)] font-semibold leading-none tracking-tight sm:w-[7.5rem] sm:text-right md:w-[9.5rem]">
+                  {t('anni.oggiLabel')}
+                </p>
+                <p className="max-w-md font-body text-[0.98rem] leading-relaxed text-ink-2 md:max-w-lg md:text-[1.05rem]">
+                  {t('anni.oggi')}
+                </p>
+              </article>
+            </div>
           </div>
         </div>
       </section>

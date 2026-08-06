@@ -152,13 +152,22 @@ const it: Record<string, string> = {
   'pairings.sub': 'Quattro ricette per accompagnare i vini Grosjean. Dosi per 2 persone.',
   'pairings.ingredients': 'Ingredienti',
   'pairings.prep': 'Preparazione',
+  'pairings.withWine': 'Il vino',
+  'pairings.shop': 'Acquista in cantina',
+  'pairings.showAll': 'Mostra le ricette',
+  'pairings.hide': 'Nascondi le ricette',
+  'pairings.showScroll': 'Vista immersiva',
+  'pairings.scrub': 'Scorri le ricette',
+  'pairings.recipeOf': 'Ricetta',
   'pairings.r1.dish': 'Capesante e gamberi al burro agrumato',
   'pairings.r1.steps':
     'Scottare capesante e gamberi per pochi minuti mantenendoli morbidi. Sfuma con un goccio di vino bianco e aggiungi burro, scorza di limone, prezzemolo ed erba cipollina tritati. Servi in una fondina con il fondo di cottura emulsionato e completa con zest di limone e olio extravergine.',
+  'pairings.r1.wineNote':
+    'In cottura usa un goccio di Chambave Muscat per la sfumatura: gli aromi di albicocca e fiori bianchi legano il burro agrumato. A tavola servilo fresco (8–10 °C) per accompagnare il piatto.',
   'pairings.r1.i0': '6 capesante',
   'pairings.r1.i1': '4 gamberi rossi',
   'pairings.r1.i2': 'Burro',
-  'pairings.r1.i3': 'Vino bianco',
+  'pairings.r1.i3': 'Chambave Muscat (per sfumare)',
   'pairings.r1.i4': 'Scorza di limone',
   'pairings.r1.i5': 'Prezzemolo',
   'pairings.r1.i6': 'Erba cipollina',
@@ -167,6 +176,8 @@ const it: Record<string, string> = {
   'pairings.r2.dish': 'Filetto di branzino, crema di patate, asparagi e limone',
   'pairings.r2.steps':
     'Cuoci le patate e frullale con una noce di burro fino a ottenere una crema liscia. Sbollenta gli asparagi e ripassali in padella con olio e timo. Rosola il branzino dalla parte della pelle fino a renderla croccante, poi completa la cottura dal lato della polpa. Impiatta con la crema di patate, gli asparagi, il branzino e completa con scorza di limone grattugiata, olio EVO e germogli freschi.',
+  'pairings.r2.wineNote':
+    'Il Chardonnay Vallée d’Aoste DOC bilancia la crema di patate e la crosta del branzino con freschezza e note di agrumi. Servilo a 10–12 °C, nel bicchiere accanto al piatto.',
   'pairings.r2.i0': '2 filetti di branzino con pelle',
   'pairings.r2.i1': '250 g di patate',
   'pairings.r2.i2': '8 asparagi',
@@ -178,6 +189,8 @@ const it: Record<string, string> = {
   'pairings.r3.dish': 'Merluzzo arrosto, crema di zucchine e asparagi',
   'pairings.r3.steps':
     'Cuoci le zucchine e frullale con basilico e olio fino a ottenere una crema vellutata. Scotta gli asparagi in acqua salata e ripassali velocemente in padella. Arrostisci il merluzzo fino a ottenere una superficie dorata mantenendo l’interno morbido. Servi sulla crema di zucchine con gli asparagi, una fetta di limone, germogli e un filo di olio extravergine.',
+  'pairings.r3.wineNote':
+    'Le Vin de Michel — Chardonnay di selezione — sostiene la crema di zucchine e il merluzzo con struttura e finezza. Ideale nel bicchiere a 11–13 °C, senza forzare la cottura.',
   'pairings.r3.i0': '2 tranci di merluzzo',
   'pairings.r3.i1': '2 zucchine',
   'pairings.r3.i2': '8 asparagi',
@@ -188,6 +201,8 @@ const it: Record<string, string> = {
   'pairings.r4.dish': 'Tagliata di manzo, verdure arrosto e rucola',
   'pairings.r4.steps':
     'Rosola il manzo a fiamma alta e lascialo riposare prima di affettarlo. Arrostisci le verdure in forno con olio e rosmarino. Disponi la tagliata sul piatto con rucola fresca, verdure arrosto e termina con sale Maldon, pepe macinato al momento e un filo di olio extravergine.',
+  'pairings.r4.wineNote':
+    'Il Clairet, rosso agile e speziato, spezza il grasso della tagliata e dialoga con rosmarino e verdure arrosto. Servilo fresco di cantina, intorno ai 14–16 °C.',
   'pairings.r4.i0': '350 g di controfiletto di manzo',
   'pairings.r4.i1': 'Pomodorini',
   'pairings.r4.i2': 'Cipolla rossa',
@@ -351,13 +366,22 @@ const en: Record<string, string> = {
   'pairings.sub': 'Four recipes to accompany Grosjean wines. Serves 2.',
   'pairings.ingredients': 'Ingredients',
   'pairings.prep': 'Method',
+  'pairings.withWine': 'The wine',
+  'pairings.shop': 'Buy from the cellar',
+  'pairings.showAll': 'Show recipes',
+  'pairings.hide': 'Hide recipes',
+  'pairings.showScroll': 'Immersive view',
+  'pairings.scrub': 'Browse recipes',
+  'pairings.recipeOf': 'Recipe',
   'pairings.r1.dish': 'Scallops and prawns in citrus butter',
   'pairings.r1.steps':
     'Sear scallops and prawns for a few minutes, keeping them tender. Deglaze with a splash of white wine and add butter, lemon zest, chopped parsley and chives. Serve in a shallow bowl with the emulsified cooking juices, finished with lemon zest and extra-virgin olive oil.',
+  'pairings.r1.wineNote':
+    'Deglaze with a splash of Chambave Muscat: apricot and white-flower notes lift the citrus butter. Serve the same bottle chilled (8–10 °C) alongside the dish.',
   'pairings.r1.i0': '6 scallops',
   'pairings.r1.i1': '4 red prawns',
   'pairings.r1.i2': 'Butter',
-  'pairings.r1.i3': 'White wine',
+  'pairings.r1.i3': 'Chambave Muscat (to deglaze)',
   'pairings.r1.i4': 'Lemon zest',
   'pairings.r1.i5': 'Parsley',
   'pairings.r1.i6': 'Chives',
@@ -366,6 +390,8 @@ const en: Record<string, string> = {
   'pairings.r2.dish': 'Sea bass fillet, potato cream, asparagus and lemon',
   'pairings.r2.steps':
     'Cook the potatoes and blend with a knob of butter until smooth. Blanch the asparagus and finish in a pan with oil and thyme. Pan-sear the sea bass skin-side down until crisp, then finish on the flesh side. Plate with potato cream, asparagus and sea bass; finish with grated lemon zest, EVO oil and fresh sprouts.',
+  'pairings.r2.wineNote':
+    'Chardonnay Vallée d’Aoste DOC cuts through the potato cream and crisp sea-bass skin with citrus freshness. Serve at 10–12 °C in the glass beside the plate.',
   'pairings.r2.i0': '2 skin-on sea bass fillets',
   'pairings.r2.i1': '250 g potatoes',
   'pairings.r2.i2': '8 asparagus spears',
@@ -377,6 +403,8 @@ const en: Record<string, string> = {
   'pairings.r3.dish': 'Roast cod, courgette cream and asparagus',
   'pairings.r3.steps':
     'Cook the courgettes and blend with basil and oil into a silky cream. Blanch the asparagus in salted water and toss briefly in a pan. Roast the cod until golden outside and tender inside. Serve on the courgette cream with asparagus, a slice of lemon, sprouts and a drizzle of extra-virgin olive oil.',
+  'pairings.r3.wineNote':
+    'Le Vin de Michel — a selected Chardonnay — brings structure and finesse to the courgette cream and roast cod. Serve at 11–13 °C; keep the pairing in the glass, not in the pan.',
   'pairings.r3.i0': '2 cod steaks',
   'pairings.r3.i1': '2 courgettes',
   'pairings.r3.i2': '8 asparagus spears',
@@ -387,6 +415,8 @@ const en: Record<string, string> = {
   'pairings.r4.dish': 'Sliced beef, roast vegetables and rocket',
   'pairings.r4.steps':
     'Sear the beef over high heat and rest before slicing. Roast the vegetables in the oven with oil and rosemary. Arrange the sliced beef with fresh rocket and roast vegetables; finish with Maldon salt, freshly ground pepper and a drizzle of extra-virgin olive oil.',
+  'pairings.r4.wineNote':
+    'Clairet, a lively spiced red, cuts the richness of the beef and meets rosemary and roast vegetables. Serve cellar-cool, around 14–16 °C.',
   'pairings.r4.i0': '350 g beef sirloin',
   'pairings.r4.i1': 'Cherry tomatoes',
   'pairings.r4.i2': 'Red onion',
@@ -550,13 +580,22 @@ const fr: Record<string, string> = {
   'pairings.sub': 'Quatre recettes pour accompagner les vins Grosjean. Pour 2 personnes.',
   'pairings.ingredients': 'Ingrédients',
   'pairings.prep': 'Préparation',
+  'pairings.withWine': 'Le vin',
+  'pairings.shop': 'Acheter à la cave',
+  'pairings.showAll': 'Voir les recettes',
+  'pairings.hide': 'Masquer les recettes',
+  'pairings.showScroll': 'Vue immersive',
+  'pairings.scrub': 'Parcourir les recettes',
+  'pairings.recipeOf': 'Recette',
   'pairings.r1.dish': 'Coquilles Saint-Jacques et crevettes au beurre agrumé',
   'pairings.r1.steps':
     'Saisir les Saint-Jacques et les crevettes quelques minutes en les gardant tendres. Déglacer avec un trait de vin blanc et ajouter beurre, zeste de citron, persil et ciboulette ciselés. Servir dans une assiette creuse avec le fond de cuisson émulsionné, terminer avec du zeste de citron et de l’huile d’olive extra vierge.',
+  'pairings.r1.wineNote':
+    'Déglacez avec un trait de Chambave Muscat : abricot et fleurs blanches portent le beurre agrumé. Servez la même bouteille fraîche (8–10 °C) à table.',
   'pairings.r1.i0': '6 coquilles Saint-Jacques',
   'pairings.r1.i1': '4 crevettes rouges',
   'pairings.r1.i2': 'Beurre',
-  'pairings.r1.i3': 'Vin blanc',
+  'pairings.r1.i3': 'Chambave Muscat (pour déglacer)',
   'pairings.r1.i4': 'Zeste de citron',
   'pairings.r1.i5': 'Persil',
   'pairings.r1.i6': 'Ciboulette',
@@ -565,6 +604,8 @@ const fr: Record<string, string> = {
   'pairings.r2.dish': 'Filet de bar, crème de pommes de terre, asperges et citron',
   'pairings.r2.steps':
     'Cuire les pommes de terre et les mixer avec une noix de beurre jusqu’à obtenir une crème lisse. Blanchir les asperges et les faire revenir à l’huile et au thym. Faire rôtir le bar côté peau jusqu’à ce qu’elle soit croustillante, puis terminer côté chair. Dresser avec la crème, les asperges et le bar ; finir avec du zeste de citron, de l’huile EVO et des pousses fraîches.',
+  'pairings.r2.wineNote':
+    'Le Chardonnay Vallée d’Aoste DOC équilibre la crème de pommes de terre et la croûte du bar par sa fraîcheur agrumée. Servez-le à 10–12 °C, au verre à côté de l’assiette.',
   'pairings.r2.i0': '2 filets de bar avec peau',
   'pairings.r2.i1': '250 g de pommes de terre',
   'pairings.r2.i2': '8 asperges',
@@ -576,6 +617,8 @@ const fr: Record<string, string> = {
   'pairings.r3.dish': 'Cabillaud rôti, crème de courgettes et asperges',
   'pairings.r3.steps':
     'Cuire les courgettes et les mixer avec basilic et huile jusqu’à une crème veloutée. Blanchir les asperges dans l’eau salée et les faire revenir rapidement. Rôtir le cabillaud jusqu’à une surface dorée en gardant l’intérieur tendre. Servir sur la crème de courgettes avec asperges, une tranche de citron, des pousses et un filet d’huile d’olive.',
+  'pairings.r3.wineNote':
+    'Le Vin de Michel — Chardonnay de sélection — soutient la crème de courgettes et le cabillaud avec structure et finesse. Idéal au verre à 11–13 °C, sans forcer la cuisson.',
   'pairings.r3.i0': '2 pavés de cabillaud',
   'pairings.r3.i1': '2 courgettes',
   'pairings.r3.i2': '8 asperges',
@@ -586,6 +629,8 @@ const fr: Record<string, string> = {
   'pairings.r4.dish': 'Tagliata de bœuf, légumes rôtis et roquette',
   'pairings.r4.steps':
     'Saisir le bœuf à feu vif et le laisser reposer avant de le trancher. Rôtir les légumes au four avec huile et romarin. Dresser la tagliata avec de la roquette fraîche et les légumes ; terminer avec du sel Maldon, du poivre fraîchement moulu et un filet d’huile d’olive.',
+  'pairings.r4.wineNote':
+    'Le Clairet, rouge agile et épicé, coupe le gras de la tagliata et dialogue avec romarin et légumes rôtis. Servez-le frais de cave, autour de 14–16 °C.',
   'pairings.r4.i0': '350 g de contre-filet de bœuf',
   'pairings.r4.i1': 'Tomates cerises',
   'pairings.r4.i2': 'Oignon rouge',
@@ -749,13 +794,22 @@ const de: Record<string, string> = {
   'pairings.sub': 'Vier Rezepte zu den Weinen von Grosjean. Für 2 Personen.',
   'pairings.ingredients': 'Zutaten',
   'pairings.prep': 'Zubereitung',
+  'pairings.withWine': 'Der Wein',
+  'pairings.shop': 'Im Weingut kaufen',
+  'pairings.showAll': 'Rezepte zeigen',
+  'pairings.hide': 'Rezepte ausblenden',
+  'pairings.showScroll': 'Immersive Ansicht',
+  'pairings.scrub': 'Rezepte durchsuchen',
+  'pairings.recipeOf': 'Rezept',
   'pairings.r1.dish': 'Jakobsmuscheln und Garnelen in Zitrusbutter',
   'pairings.r1.steps':
     'Jakobsmuscheln und Garnelen wenige Minuten anbraten und zart halten. Mit einem Schuss Weißwein ablöschen und Butter, Zitronenschale, gehackte Petersilie und Schnittlauch hinzufügen. In einer flachen Schale mit der emulgierten Fondsauce servieren, mit Zitronenschale und Olivenöl extra vergine vollenden.',
+  'pairings.r1.wineNote':
+    'Mit einem Schuss Chambave Muscat ablöschen: Aprikose und weiße Blüten tragen die Zitrusbutter. Dieselbe Flasche kühl (8–10 °C) zum Gericht reichen.',
   'pairings.r1.i0': '6 Jakobsmuscheln',
   'pairings.r1.i1': '4 rote Garnelen',
   'pairings.r1.i2': 'Butter',
-  'pairings.r1.i3': 'Weißwein',
+  'pairings.r1.i3': 'Chambave Muscat (zum Ablöschen)',
   'pairings.r1.i4': 'Zitronenschale',
   'pairings.r1.i5': 'Petersilie',
   'pairings.r1.i6': 'Schnittlauch',
@@ -764,6 +818,8 @@ const de: Record<string, string> = {
   'pairings.r2.dish': 'Wolfsbarschfilet, Kartoffelcreme, Spargel und Zitrone',
   'pairings.r2.steps':
     'Kartoffeln garen und mit einem Stück Butter zu einer glatten Creme pürieren. Spargel blanchieren und in der Pfanne mit Öl und Thymian fertigstellen. Wolfsbarsch hautseitig knusprig braten, dann fleischseitig fertiggaren. Mit Kartoffelcreme, Spargel und Fisch anrichten; mit geriebener Zitronenschale, Olivenöl und frischen Sprossen vollenden.',
+  'pairings.r2.wineNote':
+    'Der Chardonnay Vallée d’Aoste DOC balanciert Kartoffelcreme und knusprige Wolfsbarschhaut mit Zitrusfrische. Bei 10–12 °C im Glas neben dem Teller servieren.',
   'pairings.r2.i0': '2 Wolfsbarschfilets mit Haut',
   'pairings.r2.i1': '250 g Kartoffeln',
   'pairings.r2.i2': '8 Spargelstangen',
@@ -775,6 +831,8 @@ const de: Record<string, string> = {
   'pairings.r3.dish': 'Gebratener Kabeljau, Zucchinicreme und Spargel',
   'pairings.r3.steps':
     'Zucchini garen und mit Basilikum und Öl zu einer samtigen Creme pürieren. Spargel in Salzwasser blanchieren und kurz in der Pfanne schwenken. Kabeljau rösten, bis die Oberfläche golden und das Innere zart ist. Auf der Zucchinicreme mit Spargel, einer Zitronenscheibe, Sprossen und einem Schuss Olivenöl servieren.',
+  'pairings.r3.wineNote':
+    'Le Vin de Michel — ein ausgewählter Chardonnay — trägt Zucchinicreme und Kabeljau mit Struktur und Feinheit. Ideal im Glas bei 11–13 °C, ohne den Wein in die Pfanne zu drängen.',
   'pairings.r3.i0': '2 Kabeljausteaks',
   'pairings.r3.i1': '2 Zucchini',
   'pairings.r3.i2': '8 Spargelstangen',
@@ -785,6 +843,8 @@ const de: Record<string, string> = {
   'pairings.r4.dish': 'Tagliata vom Rind, Ofengemüse und Rucola',
   'pairings.r4.steps':
     'Das Rind bei starker Hitze anbraten und vor dem Schneiden ruhen lassen. Gemüse im Ofen mit Öl und Rosmarin rösten. Die Tagliata mit frischem Rucola und Ofengemüse anrichten; mit Maldon-Salz, frisch gemahlenem Pfeffer und einem Schuss Olivenöl vollenden.',
+  'pairings.r4.wineNote':
+    'Der Clairet, ein agiler würziger Rotwein, schneidet das Fett der Tagliata und trifft Rosmarin und Ofengemüse. Kellerfrisch servieren, etwa 14–16 °C.',
   'pairings.r4.i0': '350 g Rinderhüfte',
   'pairings.r4.i1': 'Kirschtomaten',
   'pairings.r4.i2': 'Rote Zwiebel',
