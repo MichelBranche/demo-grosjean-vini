@@ -42,6 +42,14 @@ function peekHeightPx() {
   return Math.round(Math.min(Math.max(window.innerHeight * 0.42, 260), 420))
 }
 
+type PairShot = {
+  frame: HTMLElement
+  img: HTMLElement
+  from: number
+  to: number
+  setY: (v: number) => void
+}
+
 export function Pairings() {
   const { t, locale } = useI18n()
   const sectionRef = useRef<HTMLElement>(null)
@@ -50,7 +58,6 @@ export function Pairings() {
   const veilRef = useRef<HTMLDivElement>(null)
   const heightTween = useRef<gsap.core.Tween | null>(null)
   const veilTween = useRef<gsap.core.Tween | null>(null)
-  const parallaxCtx = useRef<gsap.Context | null>(null)
   const revealCtx = useRef<gsap.Context | null>(null)
   const [open, setOpen] = useState(false)
   const booted = useRef(false)
@@ -79,45 +86,6 @@ export function Pairings() {
       y: 0,
       clearProps: 'transform,opacity,visibility',
     })
-  }
-
-  const armParallax = () => {
-    parallaxCtx.current?.revert()
-    parallaxCtx.current = null
-    const root = sectionRef.current
-    if (!root) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    parallaxCtx.current = gsap.context(() => {
-      const articles = gsap.utils.toArray<HTMLElement>('[data-pair-article]', root)
-      articles.forEach((article, i) => {
-        const img = article.querySelector<HTMLElement>('[data-pair-img]')
-        if (!img) return
-
-        const from = i % 2 === 0 ? -14 : -10
-        const to = i % 2 === 0 ? 14 : 10
-
-        // Article trigger — same pattern as visita/visione; works in peek + open
-        gsap.fromTo(
-          img,
-          { yPercent: from, force3D: true },
-          {
-            yPercent: to,
-            ease: 'none',
-            force3D: true,
-            scrollTrigger: {
-              trigger: article,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 0.65,
-              invalidateOnRefresh: true,
-            },
-          },
-        )
-      })
-    }, root)
-
-    ScrollTrigger.refresh()
   }
 
   const armReveal = () => {
@@ -169,7 +137,7 @@ export function Pairings() {
     }, root)
   }
 
-  // Keep peek height + veil in sync; parallax is armed separately so it works before expand
+  // Peek height + veil — independent from image parallax
   useLayoutEffect(() => {
     const panel = panelRef.current
     const inner = innerRef.current
@@ -187,11 +155,6 @@ export function Pairings() {
       killReveal()
       gsap.set(panel, { height: peek, overflow: 'hidden' })
       gsap.set(veil, { autoAlpha: 1 })
-      // Arm parallax immediately in peek mode (don't wait for first expand)
-      if (!reduce) {
-        armParallax()
-        requestAnimationFrame(() => ScrollTrigger.refresh())
-      }
       return
     }
 
@@ -258,39 +221,88 @@ export function Pairings() {
     }
   }, [open, locale])
 
-  // Parallax always on — same lifecycle as other site media parallaxes
+  // Frame-based parallax via Lenis — not ScrollTrigger (peek overflow breaks ST ranges)
   useLayoutEffect(() => {
+    const root = sectionRef.current
+    const panel = panelRef.current
+    if (!root || !panel) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    armParallax()
+    const frames = gsap.utils.toArray<HTMLElement>('[data-pair-frame]', root)
+    const shots: PairShot[] = frames
+      .map((frame, i) => {
+        const img = frame.querySelector<HTMLElement>('[data-pair-img]')
+        if (!img) return null
+        const from = i % 2 === 0 ? -22 : -18
+        const to = i % 2 === 0 ? 22 : 18
+        gsap.set(img, { yPercent: from, force3D: true })
+        return {
+          frame,
+          img,
+          from,
+          to,
+          setY: gsap.quickSetter(img, 'yPercent') as (v: number) => void,
+        }
+      })
+      .filter((s): s is PairShot => Boolean(s))
 
-    const refresh = () => {
-      armParallax()
-      ScrollTrigger.refresh()
+    if (!shots.length) return
+
+    let active = true
+    const tick = () => {
+      if (!active) return
+      const viewH = window.innerHeight
+      const panelRect = panel.getBoundingClientRect()
+      // Bail when the whole pairings block is far off-screen
+      if (panelRect.bottom < -120 || panelRect.top > viewH + 120) return
+
+      for (const shot of shots) {
+        const rect = shot.frame.getBoundingClientRect()
+        // Skip frames clipped by the collapsed peek panel
+        const visible =
+          rect.bottom > panelRect.top + 2 &&
+          rect.top < panelRect.bottom - 2 &&
+          rect.bottom > 0 &&
+          rect.top < viewH
+        if (!visible) continue
+
+        const progress = gsap.utils.clamp(0, 1, (viewH - rect.top) / (viewH + rect.height))
+        shot.setY(shot.from + (shot.to - shot.from) * progress)
+      }
     }
-    window.addEventListener('altura:page-ready', refresh)
-    const t1 = window.setTimeout(refresh, 80)
-    const t2 = window.setTimeout(refresh, 400)
-    const t3 = window.setTimeout(() => ScrollTrigger.refresh(), 900)
-    const onResize = () => ScrollTrigger.refresh()
-    window.addEventListener('resize', onResize)
 
-    const panel = panelRef.current
-    const ro =
-      typeof ResizeObserver !== 'undefined' && panel
-        ? new ResizeObserver(() => ScrollTrigger.refresh())
-        : null
-    if (panel && ro) ro.observe(panel)
+    const onLenisScroll = () => tick()
+    let lenis = window.__lenis
+    lenis?.on('scroll', onLenisScroll)
+
+    // Lenis may mount after this effect — bind when page is ready
+    const bindLenis = () => {
+      if (lenis) lenis.off('scroll', onLenisScroll)
+      lenis = window.__lenis
+      lenis?.on('scroll', onLenisScroll)
+      tick()
+    }
+
+    window.addEventListener('scroll', tick, { passive: true })
+    window.addEventListener('resize', tick)
+    window.addEventListener('altura:page-ready', bindLenis)
+    // Keep in sync while the peek/open height tween is running
+    gsap.ticker.add(tick)
+    tick()
+
+    const t1 = window.setTimeout(bindLenis, 50)
+    const t2 = window.setTimeout(tick, 300)
 
     return () => {
-      window.removeEventListener('altura:page-ready', refresh)
-      window.removeEventListener('resize', onResize)
+      active = false
+      lenis?.off('scroll', onLenisScroll)
+      window.removeEventListener('scroll', tick)
+      window.removeEventListener('resize', tick)
+      window.removeEventListener('altura:page-ready', bindLenis)
+      gsap.ticker.remove(tick)
       window.clearTimeout(t1)
       window.clearTimeout(t2)
-      window.clearTimeout(t3)
-      ro?.disconnect()
-      parallaxCtx.current?.revert()
-      parallaxCtx.current = null
+      shots.forEach((s) => gsap.set(s.img, { clearProps: 'transform' }))
     }
   }, [locale])
 
@@ -351,7 +363,7 @@ export function Pairings() {
                     src={r.img}
                     alt={`${r.wine} — ${r.dish}`}
                     className="absolute left-0 w-full object-cover will-change-transform"
-                    style={{ top: '-15%', height: '130%' }}
+                    style={{ top: '-24%', height: '148%' }}
                     loading={i === 0 ? 'eager' : 'lazy'}
                   />
                 </div>
