@@ -38,6 +38,12 @@ export function ScrollStory() {
       ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
       : false,
   )
+  // Pick a lighter source on small screens (source[media] is unreliable in some browsers)
+  const [heroSrc] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+      ? '/videos/hero-mobile.mp4'
+      : '/videos/hero.mp4',
+  )
   const heroUnlockedRef = useRef(heroUnlocked)
   heroUnlockedRef.current = heroUnlocked
 
@@ -65,6 +71,30 @@ export function ScrollStory() {
     }
   }, [reduceMotion, showIntro, heroUnlocked])
 
+  // Kick playback as soon as the hero unlocks — IO alone often waits for a scroll on mobile
+  useEffect(() => {
+    if (reduceMotion || !heroUnlocked) return
+    const video = heroVideoRef.current
+    if (!video) return
+    const kick = () => {
+      if (!heroUnlockedRef.current) return
+      // Autoplay policies: muted + playsInline is reliable on iOS/Android
+      if (!heroSoundOn) video.muted = true
+      void video.play().catch(() => {
+        video.muted = true
+        void video.play().catch(() => {})
+      })
+    }
+    kick()
+    // Retry once the file has enough data (common on mobile networks)
+    video.addEventListener('loadeddata', kick, { once: true })
+    video.addEventListener('canplay', kick, { once: true })
+    return () => {
+      video.removeEventListener('loadeddata', kick)
+      video.removeEventListener('canplay', kick)
+    }
+  }, [heroUnlocked, reduceMotion, heroSoundOn])
+
   useEffect(() => {
     if (reduceMotion) return
     const video = heroVideoRef.current
@@ -74,13 +104,13 @@ export function ScrollStory() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry || !heroUnlockedRef.current) return
-        if (entry.isIntersecting && entry.intersectionRatio > 0.15) {
+        if (entry.isIntersecting && entry.intersectionRatio > 0.05) {
           void video.play().catch(() => {})
-        } else {
+        } else if (!entry.isIntersecting) {
           video.pause()
         }
       },
-      { threshold: [0, 0.15, 0.35] },
+      { threshold: [0, 0.05, 0.15, 0.35] },
     )
 
     observer.observe(hero)
@@ -118,7 +148,14 @@ export function ScrollStory() {
       const skipIntro = () => {
         intro?.remove()
         gsap.set(heroBoot, { clearProps: 'all' })
+        heroUnlockedRef.current = true
         setHeroUnlocked(true)
+        const video = heroVideoRef.current
+        if (video) {
+          video.muted = true
+          video.playsInline = true
+          void video.play().catch(() => {})
+        }
         armScrollChapters()
         armScroll()
       }
@@ -228,8 +265,16 @@ export function ScrollStory() {
           if (!video) return
           // Drive the element directly during the curtain — no React re-render yet
           heroUnlockedRef.current = true
-          video.muted = false
+          video.playsInline = true
           video.volume = 1
+          // Mobile browsers block unmuted autoplay — start muted there, sound on desktop
+          const mobile = window.matchMedia('(max-width: 767px), (pointer: coarse)').matches
+          if (mobile) {
+            video.muted = true
+            void video.play().catch(() => {})
+            return
+          }
+          video.muted = false
           if (video.paused) {
             void video.play().catch(() => {
               video.muted = true
@@ -274,14 +319,15 @@ export function ScrollStory() {
       }
 
       function armHeroToViniEscort() {
+        // Desktop only — on mobile the forced escort feels sticky and fights native scroll
         if (reduce || heroEscortArmed) return
+        if (window.matchMedia('(max-width: 767px)').matches) return
         const vini = root.current?.querySelector<HTMLElement>('#vini')
         const hero = root.current?.querySelector<HTMLElement>("[data-chapter='hero']")
         if (!vini || !hero) return
         heroEscortArmed = true
 
         let locking = false
-        let touchY = 0
         let unlockTimer = 0
 
         // Ease-out quart — long decelerate, no snap at the end
@@ -292,9 +338,7 @@ export function ScrollStory() {
           const viniTop = vini.getBoundingClientRect().top
           const vh = window.innerHeight
           return {
-            // Mostly still looking at the hero
             onHero: viniTop > vh * 0.42,
-            // Crossing back toward the hero from the wines band
             approachingHero:
               viniTop < vh * 0.72 && viniTop > -vh * 0.12 && window.scrollY > 24,
           }
@@ -314,7 +358,6 @@ export function ScrollStory() {
           const lenis = window.__lenis
 
           if (unlockTimer) window.clearTimeout(unlockTimer)
-          // Fallback unlock slightly after the tween (in case onComplete misses)
           unlockTimer = window.setTimeout(unlockEscort, escortDuration * 1000 + 120)
 
           if (lenis) {
@@ -356,39 +399,11 @@ export function ScrollStory() {
           }
         }
 
-        const onTouchStart = (e: TouchEvent) => {
-          touchY = e.touches[0]?.clientY ?? 0
-        }
-
-        const onTouchMove = (e: TouchEvent) => {
-          if (locking) {
-            e.preventDefault()
-            return
-          }
-          const y = e.touches[0]?.clientY ?? 0
-          const dy = touchY - y
-          const { onHero, approachingHero } = zone()
-
-          if (dy > 36 && onHero) {
-            e.preventDefault()
-            escortTo(vini)
-            return
-          }
-          if (dy < -36 && approachingHero) {
-            e.preventDefault()
-            escortTo(hero)
-          }
-        }
-
         window.addEventListener('wheel', onWheel, { passive: false, capture: true })
-        window.addEventListener('touchstart', onTouchStart, { passive: true, capture: true })
-        window.addEventListener('touchmove', onTouchMove, { passive: false, capture: true })
 
         disposers.push(() => {
           if (unlockTimer) window.clearTimeout(unlockTimer)
           window.removeEventListener('wheel', onWheel, true)
-          window.removeEventListener('touchstart', onTouchStart, true)
-          window.removeEventListener('touchmove', onTouchMove, true)
         })
       }
 
@@ -636,16 +651,15 @@ export function ScrollStory() {
               <video
                 ref={heroVideoRef}
                 className="h-full w-full object-cover object-center"
+                src={heroSrc}
                 autoPlay={heroUnlocked && !showIntro}
                 muted={!heroSoundOn}
                 loop
                 playsInline
-                preload="auto"
+                preload="metadata"
                 poster="/images/hero-clean.jpg"
                 aria-hidden
-              >
-                <source src="/videos/hero.mp4" type="video/mp4" />
-              </video>
+              />
             )}
           </div>
           <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(26,31,36,0.62)_0%,rgba(26,31,36,0.28)_48%,rgba(26,31,36,0.18)_100%)]" />
