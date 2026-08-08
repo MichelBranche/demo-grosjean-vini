@@ -29,8 +29,11 @@
 
 html {
   overflow-x: hidden;
+  /* Always reserve classic scrollbar width — avoids layout jump when scroll locks */
+  overflow-y: scroll;
   max-width: 100%;
   overscroll-behavior-x: none;
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: var(--ink-2) var(--paper-2);
 }

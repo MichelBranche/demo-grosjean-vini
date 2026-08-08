@@ -109,6 +109,12 @@ export function ScrollStory() {
         window.setTimeout(() => ScrollTrigger.refresh(), 200)
       }
 
+      const heroMedia = el.querySelector<HTMLElement>('[data-media]')
+      // Match the scrubbed hero start scale so arming ScrollTrigger later doesn't snap
+      if (heroMedia && !reduce) {
+        gsap.set(heroMedia, { scale: 1.06, force3D: true })
+      }
+
       const skipIntro = () => {
         intro?.remove()
         gsap.set(heroBoot, { clearProps: 'all' })
@@ -131,13 +137,35 @@ export function ScrollStory() {
       } else {
         const lenis = window.__lenis
         lenis?.stop()
-        document.documentElement.style.overflow = 'hidden'
-        document.body.style.overflow = 'hidden'
+
+        // Keep the scrollbar visible — overflow:hidden + padding was causing a rightward jump.
+        // Block input scroll only; layout width stays identical before/after the curtain.
+        const blockScroll = (e: Event) => {
+          e.preventDefault()
+        }
+        const blockKeys = (e: KeyboardEvent) => {
+          if (
+            ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Spacebar'].includes(
+              e.key,
+            )
+          ) {
+            e.preventDefault()
+          }
+        }
+        window.addEventListener('wheel', blockScroll, { passive: false })
+        window.addEventListener('touchmove', blockScroll, { passive: false })
+        window.addEventListener('keydown', blockKeys)
 
         gsap.set(introWord, { autoAlpha: 0, y: 18 })
         gsap.set(introRule, { scaleY: 0 })
         gsap.set(introGo, { autoAlpha: 0, y: 14 })
         gsap.set(heroBoot, { autoAlpha: 0, y: 28 })
+
+        const unlockScroll = () => {
+          window.removeEventListener('wheel', blockScroll)
+          window.removeEventListener('touchmove', blockScroll)
+          window.removeEventListener('keydown', blockKeys)
+        }
 
         const finishIntro = () => {
           try {
@@ -145,13 +173,19 @@ export function ScrollStory() {
           } catch {
             /* ignore */
           }
-          document.documentElement.style.overflow = ''
-          document.body.style.overflow = ''
-          lenis?.scrollTo(0, { immediate: true })
+          unlockScroll()
           lenis?.start()
           intro.remove()
+          // Sync React after the curtain — avoids remounting video props mid-open
+          const video = heroVideoRef.current
+          setHeroUnlocked(true)
+          setHeroSoundOn(Boolean(video && !video.muted))
+          // Hero media is already at scale 1.06 — ST arms with no visual jump
           armScrollChapters()
-          armScroll()
+          requestAnimationFrame(() => {
+            ScrollTrigger.refresh()
+            window.setTimeout(() => ScrollTrigger.refresh(), 180)
+          })
         }
 
         const openCurtain = gsap.timeline({
@@ -191,16 +225,36 @@ export function ScrollStory() {
 
         const startHeroMedia = () => {
           const video = heroVideoRef.current
-          setHeroUnlocked(true)
-          setHeroSoundOn(true)
           if (!video) return
+          // Drive the element directly during the curtain — no React re-render yet
+          heroUnlockedRef.current = true
           video.muted = false
           video.volume = 1
-          void video.play().catch(() => {
-            video.muted = true
-            setHeroSoundOn(false)
-            void video.play().catch(() => {})
-          })
+          if (video.paused) {
+            void video.play().catch(() => {
+              video.muted = true
+              void video.play().catch(() => {})
+            })
+          }
+        }
+
+        // Warm the decoder behind the curtains so open doesn't hitch on first frames
+        const warmVideo = heroVideoRef.current
+        if (warmVideo) {
+          warmVideo.muted = true
+          warmVideo.playsInline = true
+          const prime = () => {
+            void warmVideo.play().then(() => {
+              warmVideo.pause()
+              try {
+                warmVideo.currentTime = 0
+              } catch {
+                /* ignore */
+              }
+            }).catch(() => {})
+          }
+          if (warmVideo.readyState >= 2) prime()
+          else warmVideo.addEventListener('loadeddata', prime, { once: true })
         }
 
         const onProceed = () => {
@@ -214,6 +268,8 @@ export function ScrollStory() {
         disposers.push(() => {
           revealMark.kill()
           openCurtain.kill()
+          unlockScroll()
+          lenis?.start()
         })
       }
 
