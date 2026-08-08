@@ -11,10 +11,36 @@ declare global {
   }
 }
 
+function isTouchScrollDevice() {
+  return window.matchMedia('(max-width: 767px), (pointer: coarse)').matches
+}
+
 export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce) return
+
+    // Native touch scroll only on mobile — Lenis + momentum flings fight and “teleport” up
+    if (isTouchScrollDevice()) {
+      const onScroll = () => ScrollTrigger.update()
+      window.addEventListener('scroll', onScroll, { passive: true })
+
+      // iOS/Android URL-bar show/hide fires resize with width unchanged — refreshing
+      // ScrollTrigger mid-fling jumps the page. Only refresh on real layout width changes.
+      let lastW = window.innerWidth
+      const onResize = () => {
+        const w = window.innerWidth
+        if (w === lastW) return
+        lastW = w
+        ScrollTrigger.refresh()
+      }
+      window.addEventListener('resize', onResize)
+
+      return () => {
+        window.removeEventListener('scroll', onScroll)
+        window.removeEventListener('resize', onResize)
+      }
+    }
 
     const lenis = new Lenis({
       duration: 1.55,
@@ -37,7 +63,13 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     gsap.ticker.add(tick)
     gsap.ticker.lagSmoothing(0)
 
-    const onResize = () => ScrollTrigger.refresh()
+    let lastW = window.innerWidth
+    const onResize = () => {
+      const w = window.innerWidth
+      if (w === lastW) return
+      lastW = w
+      ScrollTrigger.refresh()
+    }
     window.addEventListener('resize', onResize)
 
     return () => {
